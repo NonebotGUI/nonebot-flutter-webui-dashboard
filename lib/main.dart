@@ -3,9 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:nonebot_webui/ui/mainPage.dart';
 import 'package:nonebot_webui/utils/global.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 
 void main() async {
   version = '1.0.0';
+  // 捕获应用程序异常
+  FlutterError.onError = (FlutterErrorDetails details) async {
+    print('FlutterError: ${details.exception}');
+    print('StackTrace: ${details.stack}');
+    await http.post(
+      Uri.parse('/log'),
+      headers: {
+        "Authorization": 'Bearer Xt114514',
+      },
+      body: jsonEncode({
+        'error': details.exception.toString(),
+        'stack': details.stack.toString(),
+      }),
+    );
+  };
   runApp(const MyApp());
 }
 
@@ -14,16 +31,38 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'NoneBot WebUI',
-      home: LoginPage(title: 'NoneBot WebUI Login'),
+    return MaterialApp(
+      theme: ThemeData(
+          fontFamily: 'HarmonyOS_Sans_SC',
+          primaryColor: const Color.fromRGBO(234, 82, 82, 1),
+          buttonTheme: const ButtonThemeData(
+            buttonColor: Color.fromRGBO(234, 82, 82, 1),
+          ),
+          checkboxTheme: CheckboxThemeData(
+            fillColor:
+                MaterialStateProperty.resolveWith((Set<MaterialState> states) {
+              if (states.contains(MaterialState.selected)) {
+                return const Color.fromRGBO(234, 82, 82, 1);
+              }
+              return Colors.white;
+            }),
+            checkColor: MaterialStateProperty.all(Colors.white),
+          ),
+          progressIndicatorTheme: const ProgressIndicatorThemeData(
+              color: Color.fromRGBO(234, 82, 82, 1)),
+          appBarTheme: const AppBarTheme(color: Color.fromRGBO(234, 82, 82, 1)),
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+              backgroundColor: Color.fromRGBO(234, 82, 82, 1)),
+          switchTheme: const SwitchThemeData(
+              trackColor:
+                  MaterialStatePropertyAll(Color.fromRGBO(234, 82, 82, 1)))),
+      home: const LoginPage(),
     );
   }
 }
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.title});
-  final String title;
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -32,8 +71,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final myController = TextEditingController();
   String _password = '';
-
   String fileContent = '';
+  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   /// 加载配置文件
   Future<void> _login() async {
@@ -55,7 +94,14 @@ class _LoginPageState extends State<LoginPage> {
           content: Text('欢迎回来！'),
         ),
       );
-      Navigator.pushNamed(context, '/Home');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MainPage(
+            title: 'NoneBot WebUI',
+          ),
+        ),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -77,13 +123,13 @@ class _LoginPageState extends State<LoginPage> {
         (screenHeight > screenWidth) ? screenWidth * 0.75 : screenHeight * 0.5;
     double buttonWidth =
         (screenHeight > screenWidth) ? screenWidth * 0.09 : screenHeight * 0.07;
-
+    html.document.title = '登录 | NoneBot WebUI';
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
+            SizedBox(
               width: screenWidth,
               height: screenHeight * 0.075,
             ),
@@ -123,19 +169,19 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               child: ElevatedButton(
                 onPressed: () {
-                  //_login();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MainPage(
-                        title: 'NoneBot WebUI',
-                      ),
-                    ),
-                  );
+                  _login();
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const MainPage(
+                  //       title: 'NoneBot WebUI',
+                  //     ),
+                  //   ),
+                  // );
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
-                      const Color.fromRGBO(238, 109, 109, 1)),
+                      const Color.fromRGBO(234, 82, 82, 1)),
                   shape: MaterialStateProperty.all(const CircleBorder()),
                   iconSize: MaterialStateProperty.all(24),
                   minimumSize:
