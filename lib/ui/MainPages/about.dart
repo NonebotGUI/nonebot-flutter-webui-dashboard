@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
-import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:nonebot_webui/assets/my_flutter_app_icons.dart';
 import 'package:nonebot_webui/utils/global.dart';

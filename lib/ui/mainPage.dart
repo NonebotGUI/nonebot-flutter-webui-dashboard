@@ -2,9 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nonebot_webui/ui/MainPages/about.dart';
+import 'package:nonebot_webui/ui/MainPages/importBot.dart';
 import 'package:nonebot_webui/ui/MainPages/manageBot.dart';
+import 'package:nonebot_webui/ui/createbot.dart';
 import 'package:nonebot_webui/utils/core.dart';
 import 'package:nonebot_webui/utils/global.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key, required String title});
@@ -17,7 +21,9 @@ class _HomeScreenState extends State<MainPage> {
   final myController = TextEditingController();
   int _selectedIndex = 0;
   Timer? timer;
+  Timer? timer2;
   int runningCount = 0;
+  String title = '主页';
 
   @override
   void initState() {
@@ -25,19 +31,17 @@ class _HomeScreenState extends State<MainPage> {
     connectToWebSocket();
     setState(() {
       getSystemStatus();
+      getBotLog();
     });
   }
 
-  //每过1.5秒获取一次系统状态
+  //每过1.5秒获取一次
   getSystemStatus() async {
     timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
       socket.send('ping?token=114514');
       socket.send('system?token=114514');
       socket.send('platform?token=114514');
       socket.send('botList?token=114514');
-      if (_selectedIndex == 1) {
-        socket.send("botInfo/$gOnOpen?token=114514");
-      }
       runningCount =
           Data.botList.where((bot) => bot['isRunning'] == true).length;
       // 拿到状态后刷新页面
@@ -45,9 +49,20 @@ class _HomeScreenState extends State<MainPage> {
     });
   }
 
+  getBotLog() async {
+    timer = Timer.periodic(const Duration(milliseconds: 1500), (timer2) async {
+      if (gOnOpen.isNotEmpty) {
+        socket.send("bot/log/$gOnOpen?token=114514");
+        socket.send("botInfo/$gOnOpen?token=114514");
+        setState(() {});
+      }
+    });
+  }
+
   @override
   void dispose() {
     timer?.cancel();
+    timer2?.cancel();
     super.dispose();
   }
 
@@ -56,11 +71,12 @@ class _HomeScreenState extends State<MainPage> {
     dynamic size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
+    html.document.title = '$title | NoneBot WebUI';
     return Scaffold(
       appBar: AppBar(
         title:
             const Text('NoneBot WebUI', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color.fromRGBO(238, 109, 109, 1),
+        backgroundColor: const Color.fromRGBO(234, 82, 82, 1),
         automaticallyImplyLeading: false,
       ),
       body: Row(
@@ -68,12 +84,16 @@ class _HomeScreenState extends State<MainPage> {
           NavigationRail(
             useIndicator: false,
             selectedIconTheme: IconThemeData(
-                color: const Color.fromRGBO(238, 109, 109, 1),
+                color: const Color.fromRGBO(234, 82, 82, 1),
                 size: height * 0.03),
             selectedLabelTextStyle: TextStyle(
-                color: const Color.fromRGBO(238, 109, 109, 1),
-                fontSize: height * 0.02),
-            unselectedLabelTextStyle: TextStyle(fontSize: height * 0.02),
+                color: const Color.fromRGBO(234, 82, 82, 1),
+                fontSize: height * 0.02,
+                fontFamily: 'HarmonyOS_Sans_SC'),
+            unselectedLabelTextStyle: TextStyle(
+                fontSize: height * 0.02,
+                color: Colors.grey[600],
+                fontFamily: 'HarmonyOS_Sans_SC'),
             unselectedIconTheme:
                 IconThemeData(color: Colors.grey, size: height * 0.03),
             elevation: 2,
@@ -81,6 +101,26 @@ class _HomeScreenState extends State<MainPage> {
             onDestinationSelected: (int index) {
               setState(() {
                 _selectedIndex = index;
+                switch (index) {
+                  case 0:
+                    title = '主页';
+                    break;
+                  case 1:
+                    title = 'Bot控制台';
+                    break;
+                  case 2:
+                    title = '创建Bot';
+                    break;
+                  case 3:
+                    title = '导入Bot';
+                    break;
+                  case 4:
+                    title = '关于';
+                    break;
+                }
+                if (_selectedIndex == 1) {
+                  socket.send("botInfo/$gOnOpen?token=114514");
+                }
               });
             },
             selectedIndex: _selectedIndex,
@@ -105,18 +145,18 @@ class _HomeScreenState extends State<MainPage> {
               NavigationRailDestination(
                   icon: Icon(
                     _selectedIndex == 2
-                        ? Icons.storefront_rounded
-                        : Icons.storefront_outlined,
+                        ? Icons.add_rounded
+                        : Icons.add_outlined,
                   ),
-                  label: const Text('导入Bot'),
+                  label: const Text('创建Bot'),
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 15)),
               NavigationRailDestination(
                   icon: Icon(
                     _selectedIndex == 3
-                        ? Icons.electrical_services_rounded
-                        : Icons.electrical_services_outlined,
+                        ? Icons.file_download_rounded
+                        : Icons.file_download_outlined,
                   ),
-                  label: const Text('Websocket测试'),
+                  label: const Text('导入Bot'),
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 15)),
               NavigationRailDestination(
                   icon: Icon(
@@ -449,7 +489,7 @@ class _HomeScreenState extends State<MainPage> {
                                                             tooltip: '停止',
                                                             onPressed: () {
                                                               socket.send(
-                                                                  'stopBot?token=114514&name=${Data.botList[index]['name']}');
+                                                                  'bot/stop/${Data.botList[index]['id']}?token=114514');
                                                             }),
                                                       )
                                                     : Center(
@@ -459,7 +499,7 @@ class _HomeScreenState extends State<MainPage> {
                                                             tooltip: '启动',
                                                             onPressed: () {
                                                               socket.send(
-                                                                  'startBot?token=114514&name=${Data.botList[index]['name']}');
+                                                                  'bot/run/${Data.botList[index]['id']}?token=114514');
                                                             }),
                                                       )),
                                           ],
@@ -494,9 +534,8 @@ class _HomeScreenState extends State<MainPage> {
                           ],
                         ),
                       ),
-                const Center(
-                  child: Text('导入Bot'),
-                ),
+                const CreateBot(),
+                importBot(),
                 const About(),
               ],
             ),
