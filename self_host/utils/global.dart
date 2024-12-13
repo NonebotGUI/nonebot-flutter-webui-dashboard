@@ -1,7 +1,8 @@
- import 'dart:io';
+import 'dart:io';
 
-late WebSocket socket;
-
+late WebSocket socketToAgent;
+late WebSocket socketToClient;
+int wsStatus = 0;
 
 /// 用户配置
 class Config {
@@ -23,4 +24,3 @@ class Config {
   /// ws连接token
   static String wsToken = '';
 }
-

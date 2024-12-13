@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:shelf/shelf.dart';
@@ -8,6 +9,11 @@ import 'package:shelf_web_socket/shelf_web_socket.dart';
 import '../utils/core.dart';
 import '../utils/global.dart';
 import '../utils/logger.dart';
+
+WebSocket? socketToAgent;
+int wsStatus = 0;
+bool isReconnecting = false;
+StreamController<dynamic>? agentStreamController;
 
 void main() async {
   // 读取配置
@@ -20,7 +26,7 @@ void main() async {
   Config.wsPort = configJson['connection']['port'];
   Config.wsToken = configJson['connection']['token'];
 
-  // 设置SIGINT信号处理器
+  // 设置 SIGINT 信号处理器
   ProcessSignal.sigint.watch().listen((signal) {
     Logger.info('Waiting for applications shutdown');
     Logger.info('Application shutdown completed');
@@ -28,8 +34,9 @@ void main() async {
     exit(0);
   });
 
+  // 连接代理端
+  await connectToWs();
 
-  connectToWs();
   var router = Router();
   var staticHandler = createStaticHandler('web', defaultDocument: 'index.html');
   var staticHandlerWithLogging =
@@ -37,6 +44,11 @@ void main() async {
 
   router.get('/config', _getConfigFile);
 
+  router.post('/log', (Request request) async {
+    final body = await request.readAsString();
+    Logger.debug(body);
+    return Response.ok('Log received');
+  });
   // WebSocket 路由
   router.get('/app/protocol/ws', (Request request) {
     return wsHandler(request);
@@ -52,17 +64,12 @@ void main() async {
       return handler(request);
     } else if (request.url.path.startsWith('app/protocol/ws')) {
       return wsHandler(request);
+    } else if (request.url.path.startsWith('log')) {
+      return handler(request);
     } else {
       return staticHandlerWithLogging(request);
     }
   });
-
-  await shelf_io.serve((Request request) {
-    if (request.url.path == 'app/protocol/ws') {
-      return wsHandler(request);
-    }
-    return finalHandler(request);
-  }, Config.host, Config.port, shared: true);
 
   var server = await shelf_io.serve(finalHandler, Config.host, Config.port,
       shared: true);
@@ -120,23 +127,100 @@ Middleware customLogRequests() {
   };
 }
 
-/// WebSocket 桥梁，用于连接主机
-
+/// WebSocket 桥梁，用于连接代理端和客户端
 var wsHandler = webSocketHandler((webSocket) async {
-  // 监听客户端消息，并处理错误
+  // 监听客户端的消息，并转发给代理端
   webSocket.stream.listen(
-    (message) async {
-      message = message.toString().trim();
-      socket.add(message);
-      // 监听主机消息
-      socket.listen((event) {
-        webSocket.sink.add(event);
-      },);
+    (message) {
+      if (wsStatus != 1 || socketToAgent == null) {
+        Map<String, dynamic> res = {"type": "pong?", "data": "111真pong吗"};
+        String resStr = jsonEncode(res);
+        webSocket.sink.add(resStr);
+      } else {
+        socketToAgent!.add(message);
+      }
     },
-    onError: (error, stackTrace) {
-      Logger.error('$error\nStack Trace:\n$stackTrace');
-      webSocket.sink.add('Error processing your request.$error');
+    onError: (error) {
+      Logger.error('Error from client: $error');
     },
-    cancelOnError: true,
+    onDone: () {
+      Logger.info('Client WebSocket closed.');
+    },
+    cancelOnError: false,
+  );
+
+  // 检查与代理端的连接状态
+  if (wsStatus != 1 || socketToAgent == null) {
+    Map<String, dynamic> res = {"type": "pong?", "data": "111真pong吗"};
+    String resStr = jsonEncode(res);
+    webSocket.sink.add(resStr);
+  }
+
+  // 监听代理端的消息，并转发给客户端
+  StreamSubscription? agentSubscription;
+  agentSubscription = agentStreamController!.stream.listen(
+    (data) {
+      webSocket.sink.add(data);
+    },
+    onError: (error) {
+      Logger.error('Error from agent: $error');
+      webSocket.sink.add('Error from agent: $error');
+    },
+    onDone: () {
+      Logger.info('Agent connection closed. Retrying after 5 seconds...');
+      wsStatus = 0;
+      socketToAgent = null;
+      reconnectToWs();
+      webSocket.sink.add(jsonEncode({"type": "pong?", "data": "111真pong吗"}));
+    },
+    cancelOnError: false,
+  );
+
+  // 使用 onDone 回调处理 WebSocket 关闭事件
+  webSocket.stream.listen(
+    (_) {},
+    onDone: () {
+      agentSubscription?.cancel();
+    },
   );
 });
+
+// 与代理端建立 WebSocket 连接
+Future<void> connectToWs() async {
+  if (isReconnecting) return;
+  isReconnecting = true;
+  try {
+    socketToAgent = await WebSocket.connect(
+        'ws://${Config.wsHost}:${Config.wsPort}/nbgui/v1/ws');
+    wsStatus = 1;
+    Logger.info('Connected to agent at ws://${Config.wsHost}:${Config.wsPort}');
+    agentStreamController = StreamController<dynamic>.broadcast();
+    socketToAgent!.listen(
+      (data) {
+        agentStreamController!.add(data);
+      },
+      onError: (error) {
+        Logger.error('Error from agent: $error');
+      },
+      onDone: () {
+        Logger.info('Agent connection closed.');
+        wsStatus = 0;
+        socketToAgent = null;
+        reconnectToWs();
+      },
+      cancelOnError: false,
+    );
+  } catch (e) {
+    wsStatus = 0;
+    Logger.error(
+        'Failed to connect to agent: $e. Reconnecting in 5 seconds...');
+    reconnectToWs();
+  } finally {
+    isReconnecting = false;
+  }
+}
+
+Future<void> reconnectToWs() async {
+  await Future.delayed(Duration(seconds: 5));
+  await connectToWs();
+}
