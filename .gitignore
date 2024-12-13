@@ -35,4 +35,4 @@ migrate_working_dir/
 config/test-appsettings.json
 tem.dart
 
-nonebot-flutter-webui-agent/
+self_host/web/
