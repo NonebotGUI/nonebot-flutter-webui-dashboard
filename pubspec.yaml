@@ -91,6 +91,25 @@ flutter:
       fonts:
         - asset: fonts/JetBrainsMono-Regular.ttf
           weight: 700
+
+    - family: HarmonyOS_Sans_SC
+      fonts:
+        - asset: fonts/HarmonyOS_Sans_SC_Regular.ttf
+          weight: 700
+        - asset: fonts/HarmonyOS_Sans_SC_Bold.ttf
+          weight: 700
+        - asset: fonts/HarmonyOS_Sans_SC_Medium.ttf
+          weight: 700
+        - asset: fonts/HarmonyOS_Sans_SC_Light.ttf
+          weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+targets:
+  $default:
+    builders:
+      build_web_compilers|entrypoint:
+        options:
+          dart2js_args:
+            - --no-minify
