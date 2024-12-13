@@ -35,4 +35,4 @@ migrate_working_dir/
 config/test-appsettings.json
 tem.dart
 
-self_host/web/
+self_host/web/*
