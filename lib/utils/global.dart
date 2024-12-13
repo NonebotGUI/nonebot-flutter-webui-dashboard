@@ -38,8 +38,14 @@ class Data {
   static String platform = "Unknown";
 
   ///Bot信息
-  static Map botInfo = {};
+  static Map botInfo = {
+    "name": "Unknown",
+    "path": "Unknown",
+    "time": "Unknown",
+    "isRunning": false,
+    "pid": Null
+  };
 
   ///Bot日志
-  static late List botLog;
+  static String botLog = '';
 }
