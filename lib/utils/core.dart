@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:html';
 
 import 'package:NoneBotWebUI/utils/global.dart';
 import 'package:NoneBotWebUI/utils/wsHandler.dart';
+
+Timer? timer;
 
 void connectToWebSocket() {
   socket = WebSocket(
@@ -13,4 +17,16 @@ void connectToWebSocket() {
     MessageEvent msg = event;
     wsHandler(msg);
   }, cancelOnError: false);
+}
+
+void reconnect() {
+  //循环重连
+  timer = Timer.periodic(Duration(milliseconds: 1500), (timer) {
+    if (Data.isConnected) {
+      timer.cancel();
+    } else {
+      socket.close();
+      connectToWebSocket();
+    }
+  });
 }

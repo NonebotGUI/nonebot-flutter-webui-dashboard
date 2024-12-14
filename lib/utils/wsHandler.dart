@@ -1,20 +1,34 @@
 import 'dart:convert';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
+import 'package:NoneBotWebUI/utils/core.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
+import 'package:http/http.dart' as http;
 
 /// 处理WebSocket消息
-void wsHandler(MessageEvent msg) {
+Future<void> wsHandler(MessageEvent msg) async {
   /// 解析json
   String? msg0 = msg.data;
   // 检查是否为json
   if (msg0 != null) {
     Map<String, dynamic> msgJson = jsonDecode(msg0);
     String type = msgJson['type'];
+    await http.post(
+      Uri.parse('/log'),
+      headers: {
+        "Authorization": 'Bearer Xt114514',
+      },
+      body: jsonEncode({
+        'type': type,
+        'data': msgJson['data'],
+      }),
+    );
     switch (type) {
       // 111真pong吗
       case 'pong?':
         Data.isConnected = false;
+        // 尝试重连
+        reconnect();
         break;
       // 服务器返回pong
       case 'pong':
