@@ -1,11 +1,11 @@
 {
-    "name": "nonebot_webui",
-    "short_name": "nonebot_webui",
+    "name": "NoneBot WebUI",
+    "short_name": "NoneBot WebUI",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "新一代 NoneBot WebUI",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
