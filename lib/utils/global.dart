@@ -48,4 +48,10 @@ class Data {
 
   ///Bot日志
   static String botLog = '';
+
+  ///版本信息
+  static Map agentVersion = {
+    "version":"Unknown",
+    "nbcli":"Unknown",
+    "python":"Unknown",};
 }

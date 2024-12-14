@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:nonebot_webui/utils/global.dart';
+import 'package:NoneBotWebUI/utils/global.dart';
 
 class ManageBot extends StatefulWidget {
   const ManageBot({super.key});
@@ -14,8 +14,6 @@ class _HomeScreenState extends State<ManageBot> {
   Timer? _scrollTimer;
   Timer? _updateTimer;
   final ScrollController _scrollController = ScrollController();
-
-
 
   @override
   void initState() {
@@ -36,11 +34,10 @@ class _HomeScreenState extends State<ManageBot> {
     _scrollTimer = Timer(const Duration(seconds: 5), _scrollToBottom);
   }
 
-  void _refresh(){
+  void _refresh() {
     _updateTimer?.cancel();
     _updateTimer = Timer(const Duration(milliseconds: 500), () {
-      setState(() {
-      });
+      setState(() {});
     });
   }
 
@@ -250,7 +247,8 @@ class _HomeScreenState extends State<ManageBot> {
                                                     content: Text('Bot已经在运行了！'),
                                                   ),
                                                 )
-                                              : socket.send('bot/run/${Data.botInfo['id']}?token=114514');
+                                              : socket.send(
+                                                  'bot/run/${Data.botInfo['id']}?token=114514');
                                         },
                                         tooltip: "启动",
                                         iconSize: height * 0.03,
@@ -259,7 +257,8 @@ class _HomeScreenState extends State<ManageBot> {
                                         icon: const Icon(Icons.stop_rounded),
                                         onPressed: () {
                                           Data.botInfo['isRunning']
-                                              ? socket.send('bot/stop/${Data.botInfo['id']}?token=114514')
+                                              ? socket.send(
+                                                  'bot/stop/${Data.botInfo['id']}?token=114514')
                                               : ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                   const SnackBar(
@@ -274,7 +273,8 @@ class _HomeScreenState extends State<ManageBot> {
                                         icon: const Icon(Icons.refresh_rounded),
                                         onPressed: () {
                                           Data.botInfo['isRunning']
-                                              ? socket.send('bot/restart/${Data.botInfo['id']}?token=114514')
+                                              ? socket.send(
+                                                  'bot/restart/${Data.botInfo['id']}?token=114514')
                                               : ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                   const SnackBar(

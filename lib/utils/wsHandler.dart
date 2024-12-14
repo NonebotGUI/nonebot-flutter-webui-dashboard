@@ -1,7 +1,7 @@
 import 'dart:convert';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
-import 'package:nonebot_webui/utils/global.dart';
+import 'package:NoneBotWebUI/utils/global.dart';
 
 /// 处理WebSocket消息
 void wsHandler(MessageEvent msg) {
@@ -19,6 +19,13 @@ void wsHandler(MessageEvent msg) {
       // 服务器返回pong
       case 'pong':
         Data.isConnected = true;
+        break;
+      // 从服务器获取Agent版本信息
+      case 'version':
+        Data.isConnected = true;
+        if (msgJson['data'] is Map) {
+          Data.agentVersion = msgJson['data'];
+        } else {}
         break;
       // 从服务器获取系统状态
       case 'systemStatus':

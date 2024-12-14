@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:nonebot_webui/ui/mainPage.dart';
-import 'package:nonebot_webui/utils/global.dart';
+import 'package:NoneBotWebUI/ui/mainPage.dart';
+import 'package:NoneBotWebUI/utils/global.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
+import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
   version = '1.0.0';
@@ -111,6 +113,20 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // 注册许可证
+  Future<void> _register() async {
+    final String license = await rootBundle.loadString('lib/assets/LICENSE');
+    LicenseRegistry.addLicense(() async* {
+      yield LicenseEntryWithLineBreaks(['NoneBot WebUI Self Host'], license);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _register();
+  }
+
   @override
   Widget build(BuildContext context) {
     // 获取屏幕的尺寸
@@ -169,15 +185,15 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               child: ElevatedButton(
                 onPressed: () {
-                  _login();
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => const MainPage(
-                  //       title: 'NoneBot WebUI',
-                  //     ),
-                  //   ),
-                  // );
+                  // _login();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MainPage(
+                        title: 'NoneBot WebUI',
+                      ),
+                    ),
+                  );
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(

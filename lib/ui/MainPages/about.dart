@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nonebot_webui/assets/my_flutter_app_icons.dart';
-import 'package:nonebot_webui/utils/global.dart';
+import 'package:NoneBotWebUI/assets/my_flutter_app_icons.dart';
+import 'package:NoneBotWebUI/utils/global.dart';
 
 class About extends StatefulWidget {
   const About({super.key});
@@ -28,6 +28,15 @@ class _MoreState extends State<About> {
     setState(() {
       tapCount = 0;
       showImage = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    socket.send('version?token=114514');
+    Future.delayed(const Duration(milliseconds: 850), () {
+      setState(() {});
     });
   }
 
@@ -72,79 +81,34 @@ class _MoreState extends State<About> {
         const SizedBox(
           height: 8,
         ),
-        Row(children: <Widget>[
-          const Expanded(
-              child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '软件版本',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          )),
-          Expanded(
-              child: Align(
-            alignment: Alignment.centerRight,
-            child: InkWell(
-              child: Text(version.replaceAll('v', '').replaceAll('+fix', '.')),
-              onTap: () {
-                if (showImage) {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return Material(
-                        color: Colors.transparent,
-                        child: Center(
-                          child: AlertDialog(
-                            title: Row(
-                              children: <Widget>[
-                                Image.asset(
-                                  'lib/assets/loading.gif',
-                                  width: 180 * 0.15,
-                                  height: 180 * 0.15,
-                                ),
-                                const Text('UWU')
-                              ],
-                            ),
-                            content: InkWell(
-                              child: Image.asset('lib/assets/colorEgg.png'),
-                              onTap: () {
-                                _resetCounter();
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                } else {
-                  _handleTap();
-                }
-              },
-            ),
-          ))
-        ]),
-        const SizedBox(
-          height: 16,
+        ListTile(
+          title: const Text('Dashboard 版本',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          trailing: Text(version),
         ),
-        Row(
-          children: <Widget>[
-            const Expanded(
-                child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '平台',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            )),
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Text("Web"),
-              ),
-            )
-          ],
+        const SizedBox(
+          height: 8,
+        ),
+        ListTile(
+          title: const Text('Agent 版本',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          trailing: Text(Data.agentVersion['version']),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        ListTile(
+          title: const Text('Python 版本',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          trailing: Text(Data.agentVersion['python']),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        ListTile(
+          title: const Text('nb-cli 版本',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          trailing: Text(Data.agentVersion['nbcli']),
         ),
         const SizedBox(
           height: 20,
@@ -183,6 +147,7 @@ class _MoreState extends State<About> {
               tooltip: '开源许可证',
               onPressed: () => showLicensePage(
                   context: context,
+                  useRootNavigator: true,
                   applicationName: 'NoneBot WebUI',
                   applicationVersion: version,
                   applicationIcon: Image.asset(

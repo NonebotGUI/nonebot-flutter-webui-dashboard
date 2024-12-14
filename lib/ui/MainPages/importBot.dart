@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:nonebot_webui/utils/global.dart';
+import 'package:NoneBotWebUI/utils/global.dart';
 
 class importBot extends StatefulWidget {
   importBot({super.key});

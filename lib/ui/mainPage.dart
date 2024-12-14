@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:nonebot_webui/ui/MainPages/about.dart';
-import 'package:nonebot_webui/ui/MainPages/importBot.dart';
-import 'package:nonebot_webui/ui/MainPages/manageBot.dart';
-import 'package:nonebot_webui/ui/createbot.dart';
-import 'package:nonebot_webui/utils/core.dart';
-import 'package:nonebot_webui/utils/global.dart';
+import 'package:NoneBotWebUI/ui/MainPages/about.dart';
+import 'package:NoneBotWebUI/ui/MainPages/importBot.dart';
+import 'package:NoneBotWebUI/ui/MainPages/manageBot.dart';
+import 'package:NoneBotWebUI/ui/createbot.dart';
+import 'package:NoneBotWebUI/utils/core.dart';
+import 'package:NoneBotWebUI/utils/global.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
@@ -534,7 +534,17 @@ class _HomeScreenState extends State<MainPage> {
                           ],
                         ),
                       ),
-                const CreateBot(),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Image.asset('lib/assets/loading.gif'),
+                      const SizedBox(height: 10),
+                      const Text('前面的区域以后再来探索吧'),
+                    ],
+                  ),
+                ),
                 importBot(),
                 const About(),
               ],
