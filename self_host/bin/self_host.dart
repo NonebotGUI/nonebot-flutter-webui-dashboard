@@ -33,7 +33,7 @@ void main() async {
     exit(0);
   });
 
-  // 连接代理端
+  // 连接Agent端
   await connectToWs();
 
   var router = Router();
@@ -73,9 +73,9 @@ void main() async {
   var server = await shelf_io.serve(finalHandler, Config.host, Config.port,
       shared: true);
   if (Config.host.contains('::')) {
-    Logger.info('Serving at http://[${server.address.host}]:${server.port}');
+    Logger.info('Listening on http://[${server.address.host}]:${server.port}');
   } else {
-    Logger.info('Serving at http://${server.address.host}:${server.port}');
+    Logger.info('Listening on http://${server.address.host}:${server.port}');
   }
 }
 
@@ -126,9 +126,9 @@ Middleware customLogRequests() {
   };
 }
 
-/// WebSocket 桥梁，用于连接代理端和客户端
+/// WebSocket 桥梁，用于连接Agent端和客户端
 var wsHandler = webSocketHandler((webSocket) async {
-  // 监听客户端的消息，并转发给代理端
+  // 监听客户端的消息，并转发给Agent端
   webSocket.stream.listen(
     (message) {
       if (wsStatus != 1 || socketToAgent == null) {
@@ -148,14 +148,14 @@ var wsHandler = webSocketHandler((webSocket) async {
     cancelOnError: false,
   );
 
-  // 检查与代理端的连接状态
+  // 检查与Agent端的连接状态
   if (wsStatus != 1 || socketToAgent == null) {
     Map<String, dynamic> res = {"type": "pong?", "data": "111真pong吗"};
     String resStr = jsonEncode(res);
     webSocket.sink.add(resStr);
   }
 
-  // 监听代理端的消息，并转发给客户端
+  // 监听Agent端的消息，并转发给客户端
   StreamSubscription? agentSubscription;
   agentSubscription = agentStreamController!.stream.listen(
     (data) {
@@ -184,15 +184,20 @@ var wsHandler = webSocketHandler((webSocket) async {
   );
 });
 
-// 与代理端建立 WebSocket 连接
+// 与Agent端建立 WebSocket 连接
 Future<void> connectToWs() async {
   if (isReconnecting) return;
   isReconnecting = true;
   try {
-    socketToAgent = await WebSocket.connect(
-        'ws://${Config.wsHost}:${Config.wsPort}/nbgui/v1/ws');
+    if (Config.wsHost.contains(':')) {
+      socketToAgent = await WebSocket.connect(
+          'ws://[${Config.wsHost}]:${Config.wsPort}/nbgui/v1/ws');
+    } else {
+      socketToAgent = await WebSocket.connect(
+          'ws://${Config.wsHost}:${Config.wsPort}/nbgui/v1/ws');
+    }
     wsStatus = 1;
-    Logger.info('Connected to agent at ws://${Config.wsHost}:${Config.wsPort}');
+    Logger.success('WebSocket connection established.');
     agentStreamController = StreamController<dynamic>.broadcast();
     socketToAgent!.listen(
       (data) {
@@ -202,7 +207,7 @@ Future<void> connectToWs() async {
         Logger.error('Error from agent: $error');
       },
       onDone: () {
-        Logger.info('Agent connection closed.');
+        Logger.warn('Agent connection closed.');
         wsStatus = 0;
         socketToAgent = null;
         reconnectToWs();
