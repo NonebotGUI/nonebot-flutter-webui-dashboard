@@ -51,7 +51,11 @@ class Data {
 
   ///版本信息
   static Map agentVersion = {
-    "version":"Unknown",
-    "nbcli":"Unknown",
-    "python":"Unknown",};
+    "version": "Unknown",
+    "nbcli": "Unknown",
+    "python": "Unknown",
+  };
+
+  /// 安装Bot时的日志
+  static List installBotLog = [];
 }

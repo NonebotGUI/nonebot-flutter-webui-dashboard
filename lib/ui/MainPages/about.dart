@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:NoneBotWebUI/assets/my_flutter_app_icons.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
+import 'package:flutter/widgets.dart';
 
 class About extends StatefulWidget {
   const About({super.key});
@@ -47,6 +49,9 @@ class _MoreState extends State<About> {
 
   @override
   Widget build(BuildContext context) {
+    dynamic size = MediaQuery.of(context).size;
+    double width = size.width;
+    double height = size.height;
     return Scaffold(
         body: SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
@@ -59,16 +64,18 @@ class _MoreState extends State<About> {
             fit: BoxFit.contain,
           ),
         ),
-        Center(
+        const Center(
             child: Text(
           "NoneBot WebUI",
-          style: TextStyle(
-              fontSize: MediaQuery.of(context).textScaleFactor * 35.0,
-              fontWeight: FontWeight.bold),
+          textScaler: TextScaler.linear(3),
+          style: TextStyle(fontWeight: FontWeight.bold),
         )),
         const Center(
           child: Text(
             "_✨新一代NoneBot图形化界面✨_",
+            style: TextStyle(
+              fontFamily: 'JetBrainsMono',
+            ),
           ),
         ),
         const Divider(
@@ -83,32 +90,42 @@ class _MoreState extends State<About> {
         ),
         ListTile(
           title: const Text('Dashboard 版本',
+              textScaler: TextScaler.linear(1.25),
               style: TextStyle(fontWeight: FontWeight.bold)),
-          trailing: Text(version),
+          trailing: Text(
+            version,
+            textScaler: const TextScaler.linear(1.2),
+          ),
         ),
         const SizedBox(
           height: 8,
         ),
         ListTile(
           title: const Text('Agent 版本',
+              textScaler: TextScaler.linear(1.25),
               style: TextStyle(fontWeight: FontWeight.bold)),
-          trailing: Text(Data.agentVersion['version']),
+          trailing: Text(Data.agentVersion['version'],
+              textScaler: const TextScaler.linear(1.2)),
         ),
         const SizedBox(
           height: 8,
         ),
         ListTile(
           title: const Text('Python 版本',
+              textScaler: TextScaler.linear(1.25),
               style: TextStyle(fontWeight: FontWeight.bold)),
-          trailing: Text(Data.agentVersion['python']),
+          trailing: Text(Data.agentVersion['python'],
+              textScaler: const TextScaler.linear(1.2)),
         ),
         const SizedBox(
           height: 8,
         ),
         ListTile(
           title: const Text('nb-cli 版本',
+              textScaler: TextScaler.linear(1.25),
               style: TextStyle(fontWeight: FontWeight.bold)),
-          trailing: Text(Data.agentVersion['nbcli']),
+          trailing: Text(Data.agentVersion['nbcli'],
+              textScaler: const TextScaler.linear(1.2)),
         ),
         const SizedBox(
           height: 20,

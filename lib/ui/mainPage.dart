@@ -534,17 +534,18 @@ class _HomeScreenState extends State<MainPage> {
                           ],
                         ),
                       ),
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Image.asset('lib/assets/loading.gif'),
-                      const SizedBox(height: 10),
-                      const Text('前面的区域以后再来探索吧'),
-                    ],
-                  ),
-                ),
+                CreateBot(),
+                // Center(
+                //   child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     children: <Widget>[
+                //       Image.asset('lib/assets/loading.gif'),
+                //       const SizedBox(height: 10),
+                //       const Text('前面的区域以后再来探索吧'),
+                //     ],
+                //   ),
+                // ),
                 importBot(),
                 const About(),
               ],
