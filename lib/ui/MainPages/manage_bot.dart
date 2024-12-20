@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
@@ -133,6 +134,103 @@ class _HomeScreenState extends State<ManageBot> {
                           ),
                         ],
                       )),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: size.width * 0.2,
+                        child: OutlinedButton(
+                          child: const Icon(Icons.edit_rounded),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  TextEditingController _controller =
+                                      TextEditingController();
+                                  return AlertDialog(
+                                    title: const Text('重命名Bot'),
+                                    content: TextField(
+                                      controller: _controller,
+                                      decoration: const InputDecoration(
+                                        hintText: '请输入新的Bot名称',
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('取消'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          if (_controller.text.isNotEmpty) {
+                                            Map data = {
+                                              'id': Data.botInfo['id'],
+                                              'name': _controller.text
+                                            };
+                                            String res = jsonEncode(data);
+                                            socket.send(
+                                                'bot/rename?data=$res?token=114514');
+                                            Navigator.of(context).pop();
+                                          }
+                                        },
+                                        child: const Text('确定'),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: size.width * 0.2,
+                        child: OutlinedButton(
+                          child: const Icon(Icons.delete_rounded),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('删除Bot'),
+                                    content: const Text('确定删除Bot吗？'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('取消'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          socket.send(
+                                              'bot/delete/${Data.botInfo['id']}?token=114514');
+                                          gOnOpen = '';
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('确定(连同目录一起删除)',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                            )),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          socket.send(
+                                              'bot/remove/${Data.botInfo['id']}?token=114514');
+                                          gOnOpen = '';
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text(
+                                          '确定',
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  );
+                                });
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -285,6 +383,16 @@ class _HomeScreenState extends State<ManageBot> {
                                         tooltip: "重启",
                                         iconSize: height * 0.03,
                                       ),
+                                      // IconButton(
+                                      //   icon:
+                                      //       const Icon(Icons.terminal_outlined),
+                                      //   tooltip: '管理Bot',
+                                      //   iconSize: height * 0.03,
+                                      //   onPressed: () {
+                                      //     Navigator.pushNamed(
+                                      //         context, '/manageBot');
+                                      //   },
+                                      // )
                                     ],
                                   ),
                                 )
