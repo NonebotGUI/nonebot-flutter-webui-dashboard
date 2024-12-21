@@ -6,6 +6,7 @@ late String version;
 late WebSocket socket;
 String gOnOpen = '';
 
+
 /// 配置文件
 class Config {
   /// 访问密码

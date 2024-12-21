@@ -194,6 +194,23 @@ class _HomeScreenState extends State<MainPageMobile> {
                 Navigator.pop(context);
               },
             ),
+            ListTile(
+              leading: Icon(Icons.balance_rounded,
+                  color: _selectedIndex == 5
+                      ? const Color.fromRGBO(234, 84, 84, 1)
+                      : Colors.grey[900]),
+                  title: Text('开源许可证',
+                  style: TextStyle(
+                      color: _selectedIndex == 5
+                          ? const Color.fromRGBO(234, 84, 84, 1)
+                          : Colors.grey[900])),
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = 5;
+                    title = '开源许可证';
+                  });
+                },
+            )
           ],
         ),
       ),
@@ -596,6 +613,15 @@ class _HomeScreenState extends State<MainPageMobile> {
                 // ),
                 importBot(),
                 const About(),
+                LicensePage(
+                  applicationName: 'NoneBot WebUI',
+                  applicationVersion: version,
+                  applicationIcon: const Image(
+                    image: AssetImage('lib/assets/logo.png'),
+                    width: 100,
+                    height: 100,
+                  ),
+                )
               ],
             ),
           )
