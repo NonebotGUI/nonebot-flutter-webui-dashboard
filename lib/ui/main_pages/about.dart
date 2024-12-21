@@ -47,9 +47,6 @@ class _MoreState extends State<About> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic size = MediaQuery.of(context).size;
-    double width = size.width;
-    double height = size.height;
     return Scaffold(
         body: SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
@@ -57,7 +54,7 @@ class _MoreState extends State<About> {
         Center(
           child: Image.asset(
             'lib/assets/logo.png',
-            width: MediaQuery.of(context).size.width * 0.2,
+            width: MediaQuery.of(context).size.height * 0.2,
             height: null,
             fit: BoxFit.contain,
           ),
@@ -158,18 +155,6 @@ class _MoreState extends State<About> {
               tooltip: '文档地址',
               iconSize: 30,
             ),
-            IconButton(
-              icon: const Icon(Icons.balance_rounded),
-              tooltip: '开源许可证',
-              onPressed: () => showLicensePage(
-                  context: context,
-                  useRootNavigator: true,
-                  applicationName: 'NoneBot WebUI',
-                  applicationVersion: version,
-                  applicationIcon: Image.asset(
-                    'lib/assets/logo.png',
-                  )),
-            )
           ],
         )
       ]),
