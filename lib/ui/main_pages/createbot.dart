@@ -416,7 +416,7 @@ class _InstallingBotState extends State<InstallingBot> {
           borderRadius: BorderRadius.circular(5.0),
         ),
         child: Container(
-          width: (height > width) ? width * 0.8 : width * 0.6,
+          width: (height > width) ? width * 0.9 : width * 0.6,
           height: (height > width) ? height * 0.8 : height * 0.8,
           margin: const EdgeInsets.all(16.0),
           child: Column(
@@ -438,21 +438,19 @@ class _InstallingBotState extends State<InstallingBot> {
                 flex: 14,
                 child: Card(
                   color: const Color.fromARGB(255, 31, 28, 28),
-                  child: SizedBox(
-                    width: width * 0.58,
-                    height: height * 0.6,
-                    child: Container(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SingleChildScrollView(
-                          child: Text(
-                            _log,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'JetBrainsMono',
-                            ),
+                  child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      padding: const EdgeInsets.all(8.0),
+                      child: SingleChildScrollView(
+                        child: Text(
+                          _log,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'JetBrainsMono',
                           ),
-                        )),
-                  ),
+                        ),
+                      )),
                 ),
               ),
               const Divider(

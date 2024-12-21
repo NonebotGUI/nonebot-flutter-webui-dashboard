@@ -456,50 +456,71 @@ class _BotInfoDialogState extends State<BotInfoDialog> {
                       _item('ID', Data.botInfo['id']),
                       _item('路径', Data.botInfo['path']),
                       _item('PID', Data.botInfo['pid'].toString()),
-                      Expanded(
-                          child: Column(
-                        children: <Widget>[
-                          const Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                "状态",
-                                textScaler: TextScaler.linear(1.4),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Data.botInfo['isRunning']
-                                  ? const Text(
-                                      "运行中",
-                                      textScaler: TextScaler.linear(1.2),
-                                      style: TextStyle(
-                                        color: Colors.green,
+                      _item('状态', Data.botInfo['isRunning'] ? '运行中' : '未运行'),
+                    ],
+                  ),
+                ),
+                const Divider(
+                  color: Colors.grey,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      IconButton(
+                        icon: const Icon(Icons.delete_rounded),
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('删除Bot'),
+                                  content: const Text('确定删除Bot吗？'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('取消'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        socket.send(
+                                            'bot/delete/${Data.botInfo['id']}?token=114514');
+                                        gOnOpen = '';
+                                        setState(() {});
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('确定(连同目录一起删除)',
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                          )),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        socket.send(
+                                            'bot/remove/${Data.botInfo['id']}?token=114514');
+                                        gOnOpen = '';
+                                        setState(() {});
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text(
+                                        '确定',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                        ),
                                       ),
                                     )
-                                  : const Text(
-                                      "未运行",
-                                      style: TextStyle(
-                                        color: Color.fromRGBO(234, 82, 82, 1),
-                                      ),
-                                      textScaler: TextScaler.linear(1.2),
-                                    ),
-                            ),
-                          ),
-                        ],
-                      )),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: size.width * 0.65,
-                        child: OutlinedButton(
-                          child: const Icon(Icons.edit_rounded),
+                                  ],
+                                );
+                              });
+                        },
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      IconButton(
                           onPressed: () {
                             showDialog(
                                 context: context,
@@ -532,6 +553,7 @@ class _BotInfoDialogState extends State<BotInfoDialog> {
                                             socket.send(
                                                 'bot/rename?data=$res?token=114514');
                                             Navigator.of(context).pop();
+                                            setState(() {});
                                           }
                                         },
                                         child: const Text('确定'),
@@ -540,69 +562,10 @@ class _BotInfoDialogState extends State<BotInfoDialog> {
                                   );
                                 });
                           },
-                        ),
+                          icon: const Icon(Icons.edit_rounded)),
+                      const SizedBox(
+                        width: 4,
                       ),
-                      SizedBox(
-                        width: size.width * 0.65,
-                        child: OutlinedButton(
-                          child: const Icon(Icons.delete_rounded),
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text('删除Bot'),
-                                    content: const Text('确定删除Bot吗？'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('取消'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          socket.send(
-                                              'bot/delete/${Data.botInfo['id']}?token=114514');
-                                          gOnOpen = '';
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('确定(连同目录一起删除)',
-                                            style: TextStyle(
-                                              color: Colors.red,
-                                            )),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          socket.send(
-                                              'bot/remove/${Data.botInfo['id']}?token=114514');
-                                          gOnOpen = '';
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text(
-                                          '确定',
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  );
-                                });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(
-                  color: Colors.grey,
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
                       ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop();
