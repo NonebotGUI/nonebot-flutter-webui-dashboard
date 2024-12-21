@@ -16,7 +16,17 @@ StreamController<dynamic>? agentStreamController;
 
 void main() async {
   // 读取配置
-  String config = File('self_host.json').readAsStringSync();
+  if (!File('config.json').existsSync()) {
+    Map cfg = {
+      "host": "0.0.0.0",
+      "port": 8025,
+      "password": "123456",
+      "connection": {"host": "127.0.0.1", "port": 2519, "token": "123456"}
+    };
+    String cfgStr = jsonEncode(cfg);
+    File('config.json').writeAsStringSync(cfgStr);
+  }
+  String config = File('config.json').readAsStringSync();
   Map<String, dynamic> configJson = jsonDecode(config);
   Config.token = configJson['password'];
   Config.port = configJson['port'];
@@ -24,6 +34,10 @@ void main() async {
   Config.wsHost = configJson['connection']['host'];
   Config.wsPort = configJson['connection']['port'];
   Config.wsToken = configJson['connection']['token'];
+  if (Config.token.isEmpty) {
+    Logger.error('Please set the password in the configuration file.');
+    exit(1);
+  }
 
   // 设置 SIGINT 信号处理器
   ProcessSignal.sigint.watch().listen((signal) {
@@ -81,7 +95,7 @@ void main() async {
 
 Response _getConfigFile(Request request) {
   try {
-    final file = File('self_host.json');
+    final file = File('config.json');
     if (file.existsSync()) {
       return Response.ok(file.readAsStringSync(),
           headers: {'Content-Type': 'application/json'});
