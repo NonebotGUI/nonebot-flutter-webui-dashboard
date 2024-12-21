@@ -1,30 +1,33 @@
 import 'dart:convert';
+import 'package:NoneBotWebUI/ui_mobile/main_pages/manage_bot.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:NoneBotWebUI/ui/mainPage.dart';
+import 'package:NoneBotWebUI/ui/main_page.dart';
+import 'package:NoneBotWebUI/ui_mobile/main_page.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
-  version = '1.0.0';
+  version = 'pre-0.1.0';
+
   // 捕获应用程序异常
-  FlutterError.onError = (FlutterErrorDetails details) async {
-    print('FlutterError: ${details.exception}');
-    print('StackTrace: ${details.stack}');
-    await http.post(
-      Uri.parse('/log'),
-      headers: {
-        "Authorization": 'Bearer Xt114514',
-      },
-      body: jsonEncode({
-        'error': details.exception.toString(),
-        'stack': details.stack.toString(),
-      }),
-    );
-  };
+  // FlutterError.onError = (FlutterErrorDetails details) async {
+  //   print('FlutterError: ${details.exception}');
+  //   print('StackTrace: ${details.stack}');
+  //   await http.post(
+  //     Uri.parse('/log'),
+  //     headers: {
+  //       "Authorization": 'Bearer Xt114514',
+  //     },
+  //     body: jsonEncode({
+  //       'error': details.exception.toString(),
+  //       'stack': details.stack.toString(),
+  //     }),
+  //   );
+  // };
   runApp(const MyApp());
 }
 
@@ -35,7 +38,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-          fontFamily: 'HarmonyOS_Sans_SC',
+          //fontFamily: 'HarmonyOS_Sans_SC',
           primaryColor: const Color.fromRGBO(234, 82, 82, 1),
           buttonTheme: const ButtonThemeData(
             buttonColor: Color.fromRGBO(234, 82, 82, 1),
@@ -75,43 +78,6 @@ class _LoginPageState extends State<LoginPage> {
   String _password = '';
   String fileContent = '';
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
-
-  /// 加载配置文件
-  Future<void> _login() async {
-    final headers = {
-      'Authorization': 'Bearer $_password',
-    };
-    final response = await http.get(
-      Uri.parse('/config'),
-      headers: headers,
-    );
-    if (response.statusCode == 200) {
-      Map<String, dynamic> config = jsonDecode(response.body);
-      final connection = config['connection'];
-      Config.wsHost = connection['host'];
-      Config.wsPort = connection['port'];
-      Config.token = connection['token'];
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('欢迎回来！'),
-        ),
-      );
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const MainPage(
-            title: 'NoneBot WebUI',
-          ),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('验证失败！'),
-        ),
-      );
-    }
-  }
 
   // 注册许可证
   Future<void> _register() async {
@@ -184,16 +150,36 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(
               child: ElevatedButton(
-                onPressed: () {
-                  // _login();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MainPage(
-                        title: 'NoneBot WebUI',
-                      ),
-                    ),
+                onPressed: () async {
+                  final headers = {
+                    'Authorization': 'Bearer $_password',
+                  };
+                  final response = await http.get(
+                    Uri.parse('/config'),
+                    headers: headers,
                   );
+                  if (response.statusCode == 200) {
+                    Map<String, dynamic> config = jsonDecode(response.body);
+                    final connection = config['connection'];
+                    Config.wsHost = connection['host'];
+                    Config.wsPort = connection['port'];
+                    Config.token = connection['token'];
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('欢迎回来！'),
+                    ));
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => (screenWidth > screenHeight)
+                              ? const MainPage()
+                              : const MainPageMobile()),
+                      (Route<dynamic> route) => false,
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('验证失败了喵'),
+                    ));
+                  }
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
