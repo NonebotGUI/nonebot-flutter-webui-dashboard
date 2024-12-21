@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:html';
 import 'package:NoneBotWebUI/utils/core.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
-import 'package:http/http.dart' as http;
 
 /// 处理WebSocket消息
 Future<void> wsHandler(MessageEvent msg) async {
@@ -13,16 +12,6 @@ Future<void> wsHandler(MessageEvent msg) async {
   if (msg0 != null) {
     Map<String, dynamic> msgJson = jsonDecode(msg0);
     String type = msgJson['type'];
-    await http.post(
-      Uri.parse('/log'),
-      headers: {
-        "Authorization": 'Bearer Xt114514',
-      },
-      body: jsonEncode({
-        'type': type,
-        'data': msgJson['data'],
-      }),
-    );
     switch (type) {
       // 111真pong吗
       case 'pong?':

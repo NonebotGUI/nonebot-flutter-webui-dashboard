@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:html';
 
 import 'package:NoneBotWebUI/utils/global.dart';
-import 'package:NoneBotWebUI/utils/wsHandler.dart';
+import 'package:NoneBotWebUI/utils/ws_handler.dart';
 
 Timer? timer;
 
