@@ -26,13 +26,14 @@ jobs:
       - name: Compile
         run: |
           mkdir dist
+          cd self_host
           dart pub get
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            dart compile exe self_host/bin/self_host.dart -o dist\\dashboard-windows.exe
+            dart compile exe bin/self_host.dart -o ../dist/dashboard-windows.exe
           elif [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-            dart compile exe self_host/bin/self_host.dart -o dist/dashboard-linux
+            dart compile exe bin/self_host.dart -o ../dist/dashboard-linux
           else
-            dart compile exe self_host/bin/self_host.dart -o dist/dashboard-macos
+            dart compile exe bin/self_host.dart -o ../dist/dashboard-macos
           fi
       - name: Upload Dist Artifact
         uses: actions/upload-artifact@v4
