@@ -127,14 +127,14 @@ jobs:
 
         - name: Zip
           run: |
-            zip -r dashboard.zip build/web/
+            zip -r dashboard-index.zip build/web/
             mv dashboard.zip dist/
 
         - name: Upload Dashboard
           uses: actions/upload-artifact@v4
           with:
             name: dashboard-index
-            path: dist/dashboard.zip
+            path: dist/dashboard-index.zip
 
 
   publish_releases:
@@ -178,8 +178,10 @@ jobs:
           generate_release_notes: true
           token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
           files: |
-            dist/dashboard-${{ matrix.os }}
-            dist/dashboard.zip
+            dist/dashboard-windows.exe
+            dist/dashboard-linux
+            dist/dashboard-macos
+            dist/dashboard-index.zip
 
 
 
