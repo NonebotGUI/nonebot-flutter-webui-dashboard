@@ -214,7 +214,7 @@ class _HomeScreenState extends State<importBot> {
                                 //           'cmd': protocolCmd
                                 //         };
                                 //         String data = jsonEncode(res);
-                                //         socket.send('bot/import?data=$data?token=114514');
+                                //         socket.send('bot/import?data=$data?token=${Config.token}');
                                 //         setState(() {
                                 //           // 清空
                                 //           myController.clear();
@@ -256,7 +256,7 @@ class _HomeScreenState extends State<importBot> {
                                   };
                                   String data = jsonEncode(res);
                                   socket.send(
-                                      'bot/import?data=$data?token=114514');
+                                      'bot/import?data=$data?token=${Config.token}');
                                   setState(() {
                                     // 清空
                                     myController.clear();

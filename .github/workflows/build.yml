@@ -1,0 +1,140 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+      - name: Compile
+        run: |
+          mkdir dist
+          dart pub get
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            dart compile exe self_host/bin/self_host.dart -o dist\\dashboard-windows.exe
+          elif [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+            dart compile exe self_host/bin/self_host.dart -o dist/dashboard-linux
+          else
+            dart compile exe self_host/bin/self_host.dart -o dist/dashboard-macos
+          fi
+      - name: Upload Dist Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }} Self-host Artifact(Dist)
+          path: dist
+
+
+
+  build_dashboard_index:
+      name: Build
+      runs-on: ubuntu-latest
+      needs:
+        - build
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            submodules: true
+
+        - name: Install Dependencies
+          run: |
+            mkdir dist
+            sudo apt-get update -y && sudo apt-get upgrade -y;
+            sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa
+
+
+        - name: Fetch Chrome
+          uses: browser-actions/setup-chrome@v1
+          id: setup-chrome
+        - run: export CHROME_EXECUTABLE=${{ steps.setup-chrome.outputs.chrome-path }}
+
+        - name: Setup Flutter SDK
+          uses: flutter-actions/setup-flutter@v4
+          with:
+            channel: stable
+            version: 3.27.1
+
+        - name: Install dependencies
+          run: flutter pub get
+
+        - name: Build Dashboard
+          run: flutter build web
+
+        - name: Zip
+          run: |
+            zip -r dashboard.zip build/web/
+            mv dashboard.zip dist/
+
+        - name: Upload Dashboard
+          uses: actions/upload-artifact@v4
+          with:
+            name: Dashboard
+            path: dist/dashboard.zip
+
+
+  publish_releases:
+    name: publish
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Fetch Version
+        run: |
+          sudo snap install yq
+          nbgui_version=$(yq eval '.version' pubspec.yaml)
+          echo "NBGUI_VERSION=$nbgui_version" >> $GITHUB_ENV
+
+      - name: Download Self_-host Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: "${{ matrix.os }} Self-host Artifact(Dist)"
+          path: dist/
+
+      - name: Download Dashboard Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: "Dashboard"
+          path: dist/
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.NBGUI_VERSION }}
+          body_path: RELEASE_CHANGELOG.md
+          prerelease: false
+          draft: false
+          generate_release_notes: true
+          token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+          files: |
+            dist/dashboard.zip
+            dist/dashboard-linux
+            dist/dashboard-macos
+            dist/dashboard-windows.exe
+
+
+
+

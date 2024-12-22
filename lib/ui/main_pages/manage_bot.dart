@@ -169,7 +169,7 @@ class _HomeScreenState extends State<ManageBot> {
                                             };
                                             String res = jsonEncode(data);
                                             socket.send(
-                                                'bot/rename?data=$res?token=114514');
+                                                'bot/rename?data=$res?token=${Config.token}');
                                             Navigator.of(context).pop();
                                           }
                                         },
@@ -202,7 +202,7 @@ class _HomeScreenState extends State<ManageBot> {
                                       TextButton(
                                         onPressed: () {
                                           socket.send(
-                                              'bot/delete/${Data.botInfo['id']}?token=114514');
+                                              'bot/delete/${Data.botInfo['id']}?token=${Config.token}');
                                           gOnOpen = '';
                                           Navigator.of(context).pop();
                                         },
@@ -214,7 +214,7 @@ class _HomeScreenState extends State<ManageBot> {
                                       TextButton(
                                         onPressed: () {
                                           socket.send(
-                                              'bot/remove/${Data.botInfo['id']}?token=114514');
+                                              'bot/remove/${Data.botInfo['id']}?token=${Config.token}');
                                           gOnOpen = '';
                                           Navigator.of(context).pop();
                                         },
@@ -346,7 +346,7 @@ class _HomeScreenState extends State<ManageBot> {
                                                   ),
                                                 )
                                               : socket.send(
-                                                  'bot/run/${Data.botInfo['id']}?token=114514');
+                                                  'bot/run/${Data.botInfo['id']}?token=${Config.token}');
                                         },
                                         tooltip: "启动",
                                         iconSize: height * 0.03,
@@ -356,7 +356,7 @@ class _HomeScreenState extends State<ManageBot> {
                                         onPressed: () {
                                           Data.botInfo['isRunning']
                                               ? socket.send(
-                                                  'bot/stop/${Data.botInfo['id']}?token=114514')
+                                                  'bot/stop/${Data.botInfo['id']}?token=${Config.token}')
                                               : ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                   const SnackBar(
@@ -372,7 +372,7 @@ class _HomeScreenState extends State<ManageBot> {
                                         onPressed: () {
                                           Data.botInfo['isRunning']
                                               ? socket.send(
-                                                  'bot/restart/${Data.botInfo['id']}?token=114514')
+                                                  'bot/restart/${Data.botInfo['id']}?token=${Config.token}')
                                               : ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                   const SnackBar(

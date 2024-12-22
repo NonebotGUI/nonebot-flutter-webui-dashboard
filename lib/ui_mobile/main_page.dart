@@ -38,10 +38,10 @@ class _HomeScreenState extends State<MainPageMobile> {
   //每过1.5秒获取一次
   getSystemStatus() async {
     timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
-      socket.send('ping?token=114514');
-      socket.send('system?token=114514');
-      socket.send('platform?token=114514');
-      socket.send('botList?token=114514');
+      socket.send('ping?token=${Config.token}');
+      socket.send('system?token=${Config.token}');
+      socket.send('platform?token=${Config.token}');
+      socket.send('botList?token=${Config.token}');
       runningCount =
           Data.botList.where((bot) => bot['isRunning'] == true).length;
       // 拿到状态后刷新页面
@@ -52,8 +52,8 @@ class _HomeScreenState extends State<MainPageMobile> {
   getBotLog() async {
     timer = Timer.periodic(const Duration(milliseconds: 1500), (timer2) async {
       if (gOnOpen.isNotEmpty) {
-        socket.send("bot/log/$gOnOpen?token=114514");
-        socket.send("botInfo/$gOnOpen?token=114514");
+        socket.send("bot/log/$gOnOpen?token=${Config.token}");
+        socket.send("botInfo/$gOnOpen?token=${Config.token}");
         setState(() {});
       }
     });
@@ -199,17 +199,17 @@ class _HomeScreenState extends State<MainPageMobile> {
                   color: _selectedIndex == 5
                       ? const Color.fromRGBO(234, 84, 84, 1)
                       : Colors.grey[900]),
-                  title: Text('开源许可证',
+              title: Text('开源许可证',
                   style: TextStyle(
                       color: _selectedIndex == 5
                           ? const Color.fromRGBO(234, 84, 84, 1)
                           : Colors.grey[900])),
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = 5;
-                    title = '开源许可证';
-                  });
-                },
+              onTap: () {
+                setState(() {
+                  _selectedIndex = 5;
+                  title = '开源许可证';
+                });
+              },
             )
           ],
         ),
@@ -500,7 +500,7 @@ class _HomeScreenState extends State<MainPageMobile> {
                                     return InkWell(
                                         onTap: () {
                                           socket.send(
-                                              "botInfo/${Data.botList[index]['id']}?token=114514");
+                                              "botInfo/${Data.botList[index]['id']}?token=${Config.token}");
                                           gOnOpen = Data.botList[index]['id'];
                                           setState(() {
                                             _selectedIndex = 1;
@@ -554,7 +554,7 @@ class _HomeScreenState extends State<MainPageMobile> {
                                                             tooltip: '停止',
                                                             onPressed: () {
                                                               socket.send(
-                                                                  'bot/stop/${Data.botList[index]['id']}?token=114514');
+                                                                  'bot/stop/${Data.botList[index]['id']}?token=${Config.token}');
                                                             }),
                                                       )
                                                     : Center(
@@ -564,7 +564,7 @@ class _HomeScreenState extends State<MainPageMobile> {
                                                             tooltip: '启动',
                                                             onPressed: () {
                                                               socket.send(
-                                                                  'bot/run/${Data.botList[index]['id']}?token=114514');
+                                                                  'bot/run/${Data.botList[index]['id']}?token=${Config.token}');
                                                             }),
                                                       )),
                                           ],
