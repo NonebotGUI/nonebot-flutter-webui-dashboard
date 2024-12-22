@@ -29,7 +29,7 @@ jobs:
           cd self_host
           dart pub get
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            dart compile exe bin/self_host.dart -o ../dist/dashboard-windows.exe
+            pwsh -command "dart compile exe bin/self_host.dart -o ../dist/dashboard-windows.exe"
           elif [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
             dart compile exe bin/self_host.dart -o ../dist/dashboard-linux
           else
