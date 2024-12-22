@@ -128,7 +128,7 @@ jobs:
         - name: Zip
           run: |
             zip -r dashboard-index.zip build/web/
-            mv dashboard.zip dist/
+            mv dashboard-index.zip dist/
 
         - name: Upload Dashboard
           uses: actions/upload-artifact@v4
