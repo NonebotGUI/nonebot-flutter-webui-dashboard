@@ -178,10 +178,10 @@ jobs:
           generate_release_notes: true
           token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
           files: |
-            dist/dashboard.zip
-            dist/dashboard-linux
-            dist/dashboard-macos
-            dist/dashboard-windows.exe
+            dist/${{ env.NBGUI_VERSION }}/dashboard.zip
+            dist/${{ env.NBGUI_VERSION }}/dashboard-linux
+            dist/${{ env.NBGUI_VERSION }}/dashboard-macos
+            dist/${{ env.NBGUI_VERSION }}/dashboard-windows.exe
 
 
 
