@@ -10,7 +10,7 @@ import 'dart:html' as html;
 import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
-  version = 'pre-0.1.0';
+  version = 'pre-0.1.1';
 
   // 捕获应用程序异常
   // FlutterError.onError = (FlutterErrorDetails details) async {

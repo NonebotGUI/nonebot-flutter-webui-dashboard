@@ -268,6 +268,9 @@ class _HomeScreenState extends State<importBot> {
                                     path = '';
                                     protocolPath = '';
                                     protocolCmd = '';
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text('导入请求已发送')));
                                   });
                                 },
                                 style: ButtonStyle(

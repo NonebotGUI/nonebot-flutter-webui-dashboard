@@ -123,7 +123,7 @@ jobs:
           run: flutter pub get
 
         - name: Build Dashboard
-          run: flutter build web
+          run: flutter build web  --pwa-strategy none
 
         - name: Zip
           run: |
