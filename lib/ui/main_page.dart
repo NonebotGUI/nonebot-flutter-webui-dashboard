@@ -86,13 +86,13 @@ class _HomeScreenState extends State<MainPage> {
                 color: const Color.fromRGBO(234, 82, 82, 1),
                 size: height * 0.03),
             selectedLabelTextStyle: TextStyle(
-                color: const Color.fromRGBO(234, 82, 82, 1),
-                fontSize: height * 0.02,
-                fontFamily: 'HarmonyOS_Sans_SC'),
+              color: const Color.fromRGBO(234, 82, 82, 1),
+              fontSize: height * 0.02,
+            ),
             unselectedLabelTextStyle: TextStyle(
-                fontSize: height * 0.02,
-                color: Colors.grey[600],
-                fontFamily: 'HarmonyOS_Sans_SC'),
+              fontSize: height * 0.02,
+              color: Colors.grey[600],
+            ),
             unselectedIconTheme:
                 IconThemeData(color: Colors.grey, size: height * 0.03),
             elevation: 2,

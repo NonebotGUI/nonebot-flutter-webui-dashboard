@@ -123,12 +123,17 @@ jobs:
           run: flutter pub get
 
         - name: Build Dashboard
-          run: flutter build web  --pwa-strategy none
+          run: flutter build web  --pwa-strategy none --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://cdn.jsdelivr.net/npm/canvaskit-wasm@0.28.1/bin/
 
         - name: Zip
           run: |
-            zip -r dashboard-index.zip build/web/
-            mv dashboard-index.zip dist/
+            rm build/web/flutter_service_worker.js
+            rm build/web/flutter.js
+            rm build/web/manifest.json
+            cd build/
+            zip -r dashboard-index.zip web/
+            mv dashboard-index.zip ../dist/
+            cd ..
 
         - name: Upload Dashboard
           uses: actions/upload-artifact@v4
