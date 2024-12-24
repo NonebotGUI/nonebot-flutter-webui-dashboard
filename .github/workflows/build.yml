@@ -128,7 +128,6 @@ jobs:
         - name: Zip
           run: |
             rm build/web/flutter_service_worker.js
-            rm build/web/flutter.js
             rm build/web/manifest.json
             cd build/
             zip -r dashboard-index.zip web/
