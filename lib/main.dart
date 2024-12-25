@@ -10,7 +10,7 @@ import 'dart:html' as html;
 import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
-  version = 'pre-0.1.2';
+  version = 'pre-0.1.4';
 
   // 捕获应用程序异常
   // FlutterError.onError = (FlutterErrorDetails details) async {
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-          //,
+          fontFamily: 'Droid_Sans_Mono',
           primaryColor: const Color.fromRGBO(234, 82, 82, 1),
           buttonTheme: const ButtonThemeData(
             buttonColor: Color.fromRGBO(234, 82, 82, 1),
