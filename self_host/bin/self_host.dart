@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:math';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_static/shelf_static.dart';
@@ -8,6 +10,7 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_web_socket/shelf_web_socket.dart';
 import '../utils/global.dart';
 import '../utils/logger.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 WebSocket? socketToAgent;
 int wsStatus = 0;
@@ -17,13 +20,13 @@ StreamController<dynamic>? agentStreamController;
 void main() async {
   // 读取配置
   if (!File('config.json').existsSync()) {
-    Map cfg = {
+    Map<String, dynamic> cfg = {
       "host": "0.0.0.0",
       "port": 8025,
       "password": "123456",
       "connection": {"host": "127.0.0.1", "port": 2519, "token": "123456"}
     };
-    String cfgStr = jsonEncode(cfg);
+    String cfgStr = JsonEncoder.withIndent('  ').convert(cfg);
     File('config.json').writeAsStringSync(cfgStr);
   }
   String config = File('config.json').readAsStringSync();
@@ -37,6 +40,11 @@ void main() async {
   if (Config.token.isEmpty) {
     Logger.error('Please set the password in the configuration file.');
     exit(1);
+  }
+  if (!File("secret.key").existsSync()) {
+    Logger.info('Generating secret key...');
+    String secret = generateSecretKey(64);
+    File("secret.key").writeAsStringSync(secret);
   }
 
   // 设置 SIGINT 信号处理器
@@ -55,7 +63,25 @@ void main() async {
   var staticHandlerWithLogging =
       Pipeline().addMiddleware(customLogRequests()).addHandler(staticHandler);
 
-  router.get('/config', _getConfigFile);
+  router.get('/config', jwtMiddleware(_getConfigFile));
+
+// 验证jwt
+  router.post('/auth', (Request request) async {
+    final payload = await request.readAsString();
+    final data = Uri.splitQueryString(payload);
+
+    if (data['password'] == Config.token) {
+      String secret = File("secret.key").readAsStringSync();
+      final now = DateTime.now();
+      final formattedDate =
+          '${now.year}:${now.month.toString().padLeft(2, '0')}:${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+      final jwt = JWT({"login_time": formattedDate});
+      final token = jwt.sign(SecretKey(secret), expiresIn: Duration(days: 3));
+      return Response.ok(token);
+    } else {
+      return Response.forbidden('Invalid password');
+    }
+  });
 
   router.post('/log', (Request request) async {
     final body = await request.readAsString();
@@ -67,10 +93,8 @@ void main() async {
     return wsHandler(request);
   });
 
-  var handler = Pipeline()
-      .addMiddleware(customLogRequests())
-      .addMiddleware(handleAuth(token: Config.token))
-      .addHandler(router.call);
+  var handler =
+      Pipeline().addMiddleware(customLogRequests()).addHandler(router.call);
 
   var finalHandler = const Pipeline().addHandler((Request request) {
     if (request.url.path.startsWith('config')) {
@@ -109,22 +133,23 @@ Response _getConfigFile(Request request) {
 }
 
 // 认证中间件
-Middleware handleAuth({required String token}) {
-  return (Handler handler) {
-    return (Request request) async {
-      final authHeader = request.headers['Authorization'];
-
-      if (authHeader == null || authHeader != 'Bearer $token') {
-        return Response(
-          401,
-          body: '{"error": "401 Unauthorized!"}',
-          headers: {'Content-Type': 'application/json'},
-        );
+Middleware jwtMiddleware = (Handler handler) {
+  return (Request request) async {
+    final authHeader = request.headers['Authorization'];
+    if (authHeader != null && authHeader.startsWith('Bearer ')) {
+      final token = authHeader.substring(7);
+      try {
+        String secret = File('secret.key').readAsStringSync();
+        final jwt = JWT.verify(token, SecretKey(secret));
+        return handler(request);
+      } catch (e) {
+        return Response.forbidden('Invalid token');
       }
-      return handler(request);
-    };
+    } else {
+      return Response.forbidden('Missing token');
+    }
   };
-}
+};
 
 // 自定义日志中间件
 Middleware customLogRequests() {
@@ -241,4 +266,11 @@ Future<void> connectToWs() async {
 Future<void> reconnectToWs() async {
   await Future.delayed(Duration(seconds: 5));
   await connectToWs();
+}
+
+// 生成密钥
+String generateSecretKey(int length) {
+  final random = Random.secure();
+  final key = List<int>.generate(length, (_) => random.nextInt(256));
+  return base64UrlEncode(key);
 }
