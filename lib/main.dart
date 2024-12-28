@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:NoneBotWebUI/ui/main_page.dart';
 import 'package:NoneBotWebUI/ui_mobile/main_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
@@ -11,16 +12,11 @@ import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
   version = 'pre-0.1.4';
-
-  // 捕获应用程序异常
   // FlutterError.onError = (FlutterErrorDetails details) async {
   //   print('FlutterError: ${details.exception}');
   //   print('StackTrace: ${details.stack}');
   //   await http.post(
   //     Uri.parse('/log'),
-  //     headers: {
-  //       "Authorization": 'Bearer Xt114514',
-  //     },
   //     body: jsonEncode({
   //       'error': details.exception.toString(),
   //       'stack': details.stack.toString(),
@@ -73,10 +69,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final myController = TextEditingController();
-  String _password = '';
   String fileContent = '';
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
-
   // 注册许可证
   Future<void> _register() async {
     final String license = await rootBundle.loadString('lib/assets/LICENSE');
@@ -89,6 +83,38 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _register();
+    _autoLogin();
+  }
+
+  // 自动登录
+  Future<void> _autoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = await prefs.getString('token');
+    if (token != null) {
+      final res = await http.get(Uri.parse("/config"),
+          headers: {"Authorization": 'Bearer $token'});
+      if (res.statusCode == 200) {
+        final config = jsonDecode(res.body);
+        final connection = config['connection'];
+        Config.wsHost = connection['host'];
+        Config.wsPort = connection['port'];
+        Config.token = connection['token'];
+        Config.connectionMode = config['connectionMode'];
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => (MediaQuery.of(context).size.width >
+                      MediaQuery.of(context).size.height)
+                  ? const MainPage()
+                  : const MainPageMobile()),
+          (Route<dynamic> route) => false,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('自动登录失败'),
+        ));
+      }
+    }
   }
 
   @override
@@ -133,14 +159,50 @@ class _LoginPageState extends State<LoginPage> {
               height: inputFieldWidth * 0.175,
               child: TextField(
                 controller: myController,
-                onChanged: (value) {
-                  _password = value;
-                },
                 obscureText: true,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: '密码',
                 ),
+                onSubmitted: (String value) async {
+                  final password = myController.text;
+                  final res = await http.post(Uri.parse('/auth'),
+                      body: jsonEncode({'password': password}),
+                      headers: {"Content-Type": "application/json"});
+                  if (res.statusCode == 200) {
+                    final getConfig = await http.get(
+                      Uri.parse('/config'),
+                      headers: {"Authorization": 'Bearer ${res.body}'},
+                    );
+                    final config = jsonDecode(getConfig.body);
+                    final connection = config['connection'];
+                    Config.wsHost = connection['host'];
+                    Config.wsPort = connection['port'];
+                    Config.token = connection['token'];
+                    Config.connectionMode = config['connectionMode'];
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setString('token', res.body);
+                    setState(() {});
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('欢迎回来！'),
+                    ));
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            (MediaQuery.of(context).size.width >
+                                    MediaQuery.of(context).size.height)
+                                ? const MainPage()
+                                : const MainPageMobile(),
+                      ),
+                      (Route<dynamic> route) => false,
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('验证失败了喵'),
+                    ));
+                  }
+                },
               ),
             ),
             const SizedBox(
@@ -149,28 +211,36 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               child: ElevatedButton(
                 onPressed: () async {
-                  final headers = {
-                    'Authorization': 'Bearer $_password',
-                  };
-                  final response = await http.get(
-                    Uri.parse('/config'),
-                    headers: headers,
-                  );
-                  if (response.statusCode == 200) {
-                    Map<String, dynamic> config = jsonDecode(response.body);
+                  final password = myController.text;
+                  final res = await http.post(Uri.parse('/auth'),
+                      body: jsonEncode({'password': password}),
+                      headers: {"Content-Type": "application/json"});
+                  if (res.statusCode == 200) {
+                    final getConfig = await http.get(
+                      Uri.parse('/config'),
+                      headers: {"Authorization": 'Bearer ${res.body}'},
+                    );
+                    final config = jsonDecode(getConfig.body);
                     final connection = config['connection'];
                     Config.wsHost = connection['host'];
                     Config.wsPort = connection['port'];
                     Config.token = connection['token'];
+                    Config.connectionMode = config['connectionMode'];
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setString('token', res.body);
+                    setState(() {});
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text('欢迎回来！'),
                     ));
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => (screenWidth > screenHeight)
-                              ? const MainPage()
-                              : const MainPageMobile()),
+                        builder: (context) =>
+                            (MediaQuery.of(context).size.width >
+                                    MediaQuery.of(context).size.height)
+                                ? const MainPage()
+                                : const MainPageMobile(),
+                      ),
                       (Route<dynamic> route) => false,
                     );
                   } else {
