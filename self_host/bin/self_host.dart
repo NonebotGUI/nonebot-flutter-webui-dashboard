@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:shelf/shelf.dart';
@@ -24,7 +23,8 @@ void main() async {
       "host": "0.0.0.0",
       "port": 8025,
       "password": "123456",
-      "connection": {"host": "127.0.0.1", "port": 2519, "token": "123456"}
+      "connection": {"host": "127.0.0.1", "port": 2519, "token": "123456"},
+      "connectionMode": 1
     };
     String cfgStr = JsonEncoder.withIndent('  ').convert(cfg);
     File('config.json').writeAsStringSync(cfgStr);
@@ -37,6 +37,14 @@ void main() async {
   Config.wsHost = configJson['connection']['host'];
   Config.wsPort = configJson['connection']['port'];
   Config.wsToken = configJson['connection']['token'];
+  Config.connectionMode = (configJson.containsKey('connectionMode'))
+      ? configJson['connectionMode']
+      : 2;
+  if (!configJson.containsKey('connectionMode')) {
+    configJson['connectionMode'] = 2;
+    File('config.json')
+        .writeAsStringSync(JsonEncoder.withIndent('  ').convert(configJson));
+  }
   if (Config.token.isEmpty) {
     Logger.error('Please set the password in the configuration file.');
     exit(1);
@@ -68,14 +76,13 @@ void main() async {
 // 验证jwt
   router.post('/auth', (Request request) async {
     final payload = await request.readAsString();
-    final data = Uri.splitQueryString(payload);
-
+    final data = jsonDecode(payload);
     if (data['password'] == Config.token) {
       String secret = File("secret.key").readAsStringSync();
       final now = DateTime.now();
       final formattedDate =
           '${now.year}:${now.month.toString().padLeft(2, '0')}:${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
-      final jwt = JWT({"login_time": formattedDate});
+      final jwt = JWT({"login_time": formattedDate, "Expire": "3 days"});
       final token = jwt.sign(SecretKey(secret), expiresIn: Duration(days: 3));
       return Response.ok(token);
     } else {
@@ -102,6 +109,8 @@ void main() async {
     } else if (request.url.path.startsWith('app/protocol/ws')) {
       return wsHandler(request);
     } else if (request.url.path.startsWith('log')) {
+      return handler(request);
+    } else if (request.url.path.startsWith('auth')) {
       return handler(request);
     } else {
       return staticHandlerWithLogging(request);

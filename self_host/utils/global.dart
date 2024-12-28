@@ -23,4 +23,7 @@ class Config {
 
   /// ws连接token
   static String wsToken = '';
+
+  /// 连接模式
+  static int connectionMode = 1;
 }
