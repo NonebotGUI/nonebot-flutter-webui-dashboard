@@ -6,7 +6,6 @@ late String version;
 late WebSocket socket;
 String gOnOpen = '';
 
-
 /// 配置文件
 class Config {
   /// 访问密码
@@ -20,6 +19,11 @@ class Config {
 
   /// token
   static String token = 'yee';
+
+  /// 连接模式
+  /// 1;直连Agent
+  /// 2;通过Self Host Protocol连接Agent
+  static int connectionMode = 2;
 }
 
 /// 应用程序数据

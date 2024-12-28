@@ -1,18 +1,16 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'dart:html';
-
 import 'package:NoneBotWebUI/utils/global.dart';
 import 'package:NoneBotWebUI/utils/ws_handler.dart';
 
 Timer? timer;
 
 void connectToWebSocket() {
-  socket = WebSocket(
-      'ws://${window.location.hostname}:${Uri.base.port}/app/protocol/ws');
-  // socket = WebSocket('ws://127.0.0.1:2519/nbgui/v1/ws');
-  // socket = WebSocket('ws://127.0.0.1:8080/app/protocol/ws');
+  //连接到WebSocket
+  String wsUrl = (Config.connectionMode == 1)
+      ? 'ws://${Config.wsHost}:${Config.wsPort}/nbgui/v1/ws'
+      : 'ws://${window.location.hostname}:${Uri.base.port}/app/protocol/ws';
+  socket = WebSocket(wsUrl);
   socket.onMessage.listen((event) {
     MessageEvent msg = event;
     wsHandler(msg);
