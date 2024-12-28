@@ -216,11 +216,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: "dashboard-linux"
+          path: dist/
 
       - name: Download Self-host Artifact (MacOS)
         uses: actions/download-artifact@v4
         with:
           name: "dashboard-macos"
+          path: dist/
 
       - name: Download Dashboard Artifact (html)
         uses: actions/download-artifact@v4
@@ -232,6 +234,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: "dashboard-index-canvaskit"
+          path: dist/
 
       - name: Release
         uses: softprops/action-gh-release@v2
