@@ -36,7 +36,7 @@ jobs:
           name: dashboard-windows
           path: dist/dashboard-windows.exe
 
-  linux:
+  linux_amd64:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout
@@ -49,41 +49,88 @@ jobs:
         - name: Compile
           run: |
             mkdir dist
-            cd self_host
             dart pub get
-            dart compile exe bin/self_host.dart -o ../dist/dashboard-linux
-            cd ..
+            dart compile exe bin/nonebot_flutter_webui_agent.dart -o dist/dashboard-linux-amd64
   
         - name: Upload Dist Artifact
           uses: actions/upload-artifact@v4
           with:
-            name: dashboard-linux
-            path: dist/dashboard-linux
+            name: dashboard-linux-amd64
+            path: dist/dashboard-linux-amd64
 
-  macos:
-    runs-on: macos-latest
 
+  linux_arm64:
+    runs-on: ubuntu-latest
     steps:
+
         - name: Checkout
           uses: actions/checkout@v4
-          with:
-            submodules: true
-        - name: Setup Dart
-          uses: dart-lang/setup-dart@v1
-  
-        - name: Compile
+
+
+        - name: Install Dependencies
           run: |
-            mkdir dist
-            cd self_host
-            dart pub get
-            dart compile exe bin/self_host.dart -o ../dist/dashboard-macos
-            cd ..
-  
+            sudo apt update
+            sudo apt install aria2 unzip -y
+            aria2c https://storage.googleapis.com/dart-archive/channels/beta/release/3.7.0-209.1.beta/sdk/dartsdk-linux-arm64-release.zip
+            unzip dartsdk-linux-arm64-release.zip
+            rm dartsdk-linux-arm64-release.zip
+
+
+        - name: Use ARM64 Environment to Compile
+          uses: uraimo/run-on-arch-action@v2
+          with:
+            arch: aarch64
+            distro: ubuntu20.04
+            run: |
+              export PATH=$PATH:$GITHUB_WORKSPACE/dart-sdk/bin
+              mkdir dist
+              dart pub get
+              dart compile exe bin/nonebot_flutter_webui_agent.dart -o dist/dashboard-linux-arm64
+
+
+
         - name: Upload Dist Artifact
           uses: actions/upload-artifact@v4
           with:
-            name: dashboard-macos
-            path: dist/dashboard-macos
+            name: dashboard-linux-arm64
+            path: dist/dashboard-linux-arm64
+
+
+  linux_arm:
+    runs-on: ubuntu-latest
+    steps:
+
+        - name: Checkout
+          uses: actions/checkout@v4
+
+
+        - name: Install Dependencies
+          run: |
+            sudo apt update
+            sudo apt install aria2 unzip -y
+            aria2c https://storage.flutter-io.cn/dart-archive/channels/beta/release/3.7.0-209.1.beta/sdk/dartsdk-linux-arm-release.zip
+            unzip dartsdk-linux-arm-release.zip
+            rm dartsdk-linux-arm-release.zip
+
+
+        - name: Use ARM Environment to Compile
+          uses: uraimo/run-on-arch-action@v2
+          with:
+            arch: armv7
+            distro: ubuntu20.04
+            run: |
+              export PATH=$PATH:$GITHUB_WORKSPACE/dart-sdk/bin
+              mkdir dist
+              dart pub get
+              dart compile exe bin/nonebot_flutter_webui_agent.dart -o dist/dashboard-linux-arm
+
+
+
+        - name: Upload Dist Artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: dashboard-linux-arm
+            path: dist/dashboard-linux-arm
 
 
 
@@ -91,8 +138,9 @@ jobs:
       name: Build Dashboard (html)
       runs-on: ubuntu-latest
       needs:
-        - linux
-        - macos
+        - linux_amd64
+        - linux_arm64
+        - linux_arm
         - windows
 
       steps:
@@ -142,8 +190,9 @@ jobs:
     name: Build Dashboard (canvaskit)
     runs-on: ubuntu-latest
     needs:
-      - linux
-      - macos
+      - linux_arm64
+      - linux_arm
+      - linux_amd64
       - windows
 
     steps:
@@ -212,16 +261,22 @@ jobs:
           name: "dashboard-windows"
           path: dist/
 
-      - name: Download Self-host Artifact (Linux)
+      - name: Download Self-host Artifact (Linux AMD64)
         uses: actions/download-artifact@v4
         with:
-          name: "dashboard-linux"
+          name: "dashboard-linux-amd64"
           path: dist/
 
-      - name: Download Self-host Artifact (MacOS)
+      - name: Download Self-host Artifact (Linux ARM64)
         uses: actions/download-artifact@v4
         with:
-          name: "dashboard-macos"
+          name: "dashboard-linux-arm64"
+          path: dist/
+
+      - name: Download Self-host Artifact (Linux ARM)
+        uses: actions/download-artifact@v4
+        with:
+          name: "dashboard-linux-arm"
           path: dist/
 
       - name: Download Dashboard Artifact (html)
@@ -247,8 +302,9 @@ jobs:
           token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
           files: |
             dist/dashboard-windows.exe
-            dist/dashboard-linux
-            dist/dashboard-macos
+            dist/dashboard-linux-amd64
+            dist/dashboard-linux-arm64
+            dist/dashboard-linux-arm
             dist/dashboard-index-html.zip
             dist/dashboard-index-canvaskit.zip
 
