@@ -49,8 +49,9 @@ jobs:
         - name: Compile
           run: |
             mkdir dist
+            cd self_host
             dart pub get
-            dart compile exe bin/nonebot_flutter_webui_agent.dart -o dist/dashboard-linux-amd64
+            dart compile exe bin/self_host.dart -o ../dist/dashboard-linux-amd64
   
         - name: Upload Dist Artifact
           uses: actions/upload-artifact@v4
@@ -84,8 +85,9 @@ jobs:
             run: |
               export PATH=$PATH:$GITHUB_WORKSPACE/dart-sdk/bin
               mkdir dist
+              cd self_host
               dart pub get
-              dart compile exe bin/nonebot_flutter_webui_agent.dart -o dist/dashboard-linux-arm64
+              dart compile exe bin/self_host.dart -o ../dist/dashboard-linux-arm64
 
 
 
@@ -121,8 +123,9 @@ jobs:
             run: |
               export PATH=$PATH:$GITHUB_WORKSPACE/dart-sdk/bin
               mkdir dist
+              cd self_host
               dart pub get
-              dart compile exe bin/nonebot_flutter_webui_agent.dart -o dist/dashboard-linux-arm
+              dart compile exe bin/self_host.dart -o ../dist/dashboard-linux-arm
 
 
 
