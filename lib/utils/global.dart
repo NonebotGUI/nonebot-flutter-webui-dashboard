@@ -18,7 +18,7 @@ class Config {
   static int wsPort = 2519;
 
   /// token
-  static String token = 'yee';
+  static String token = '';
 
   /// 连接模式
   /// 1;直连Agent

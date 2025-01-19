@@ -11,7 +11,7 @@ import 'dart:html' as html;
 import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
-  version = '0.1.5';
+  version = '0.1.7';
   // FlutterError.onError = (FlutterErrorDetails details) async {
   //   print('FlutterError: ${details.exception}');
   //   print('StackTrace: ${details.stack}');
