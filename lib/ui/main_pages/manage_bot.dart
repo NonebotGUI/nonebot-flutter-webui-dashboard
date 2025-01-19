@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
+import 'package:NoneBotWebUI/ui/manage/managecli.dart';
 
 class ManageBot extends StatefulWidget {
   const ManageBot({super.key});
@@ -383,16 +384,19 @@ class _HomeScreenState extends State<ManageBot> {
                                         tooltip: "重启",
                                         iconSize: height * 0.03,
                                       ),
-                                      // IconButton(
-                                      //   icon:
-                                      //       const Icon(Icons.terminal_outlined),
-                                      //   tooltip: '管理Bot',
-                                      //   iconSize: height * 0.03,
-                                      //   onPressed: () {
-                                      //     Navigator.pushNamed(
-                                      //         context, '/manageBot');
-                                      //   },
-                                      // )
+                                      IconButton(
+                                        icon:
+                                            const Icon(Icons.terminal_outlined),
+                                        tooltip: '管理Bot',
+                                        iconSize: height * 0.03,
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const ManageCli()));
+                                        },
+                                      )
                                     ],
                                   ),
                                 )
@@ -413,7 +417,7 @@ class _HomeScreenState extends State<ManageBot> {
 //这一段AI写的我什么也不知道😭
 List<TextSpan> _logSpans(text) {
   RegExp regex = RegExp(
-    r'(\[[A-Z]+\])|(nonebot \|)|(uvicorn \|)|(Env: dev)|(Env: prod)|(Config)|(nonebot_plugin_[\S]+)|("nonebot_plugin_[\S]+)|(使用 Python: [\S]+)|(Using Python: [\S]+)|(Loaded adapters: [\S]+)|(\d{2}-\d{2} \d{2}:\d{2}:\d{2})|(Calling API [\S]+)',
+    r'(\[[A-Z]+\])|(nonebot \|)|(uvicorn \|)|(Env: dev)|(Env: prod)|(Config)|(nonebot_plugin_[\S]+)|("nonebot_plugin_[\S]+)|(使用 Python: [\S]+)|(Using python:[\S]+)|(Loaded adapters: [\S]+)|(\d{2}-\d{2} \d{2}:\d{2}:\d{2})|(Calling API [\S]+)',
   );
   List<TextSpan> spans = [];
   int lastEnd = 0;
@@ -467,7 +471,7 @@ List<TextSpan> _logSpans(text) {
           color = Colors.greenAccent;
         } else if (match.group(0)!.startsWith('使用 Python:')) {
           color = Colors.greenAccent;
-        } else if (match.group(0)!.startsWith('Using Python:')) {
+        } else if (match.group(0)!.startsWith('Using python:')) {
           color = Colors.greenAccent;
         } else if (match.group(0)!.startsWith('Calling API')) {
           color = Colors.purple;
