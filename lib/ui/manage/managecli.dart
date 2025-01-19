@@ -107,22 +107,22 @@ class _HomeScreenState extends State<ManageCli> {
                     ),
                     label: const Text('管理插件'),
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 15)),
-                NavigationRailDestination(
-                    icon: Icon(
-                      _selectedIndex == 4
-                          ? Icons.settings_applications_rounded
-                          : Icons.settings_applications_outlined,
-                    ),
-                    label: const Text('管理cli本体'),
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 15)),
-                NavigationRailDestination(
-                    icon: Icon(
-                      _selectedIndex == 5
-                          ? Icons.file_copy_rounded
-                          : Icons.file_copy_outlined,
-                    ),
-                    label: const Text('env配置'),
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 15)),
+                // NavigationRailDestination(
+                //     icon: Icon(
+                //       _selectedIndex == 4
+                //           ? Icons.settings_applications_rounded
+                //           : Icons.settings_applications_outlined,
+                //     ),
+                //     label: const Text('管理cli本体'),
+                //     padding: const EdgeInsets.fromLTRB(0, 0, 0, 15)),
+                // NavigationRailDestination(
+                //     icon: Icon(
+                //       _selectedIndex == 5
+                //           ? Icons.file_copy_rounded
+                //           : Icons.file_copy_outlined,
+                //     ),
+                //     label: const Text('env配置'),
+                //     padding: const EdgeInsets.fromLTRB(0, 0, 0, 15)),
               ],
             ),
             const VerticalDivider(thickness: 1, width: 1),
