@@ -9,6 +9,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 🏷️*
 
 jobs:
   windows:
@@ -135,6 +137,54 @@ jobs:
             name: dashboard-linux-arm
             path: dist/dashboard-linux-arm
 
+  macos_M1:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Compile
+        run: |
+          mkdir dist
+          cd self_host
+          dart pub get
+          dart compile exe bin/self_host.dart -o ../dist/dashboard-macos-M1
+          cd ..
+
+      - name: Upload Dist Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-macos-M1
+          path: dist/dashboard-macos-M1
+
+  macos:
+    runs-on: macos-13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Compile
+        run: |
+          mkdir dist
+          cd self_host
+          dart pub get
+          dart compile exe bin/self_host.dart -o ../dist/dashboard-macos
+          cd ..
+
+      - name: Upload Dist Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-macos
+          path: dist/dashboard-macos
+
 
 
   build_dashboard_index_html:
@@ -145,6 +195,8 @@ jobs:
         - linux_arm64
         - linux_arm
         - windows
+        - macos
+        - macos_M1
 
       steps:
         - name: Checkout
@@ -197,6 +249,8 @@ jobs:
       - linux_arm
       - linux_amd64
       - windows
+      - macos
+      - macos_M1
 
     steps:
       - name: Checkout
@@ -282,6 +336,18 @@ jobs:
           name: "dashboard-linux-arm"
           path: dist/
 
+      - name: Download Self-host Artifact (MacOS)
+        uses: actions/download-artifact@v4
+        with:
+          name: "dashboard-macos"
+          path: dist/
+
+      - name: Download Self-host Artifact (MacOS M1)
+        uses: actions/download-artifact@v4
+        with:
+          name: "dashboard-macos-M1"
+          path: dist/
+
       - name: Download Dashboard Artifact (html)
         uses: actions/download-artifact@v4
         with:
@@ -310,6 +376,8 @@ jobs:
             dist/dashboard-linux-arm
             dist/dashboard-index-html.zip
             dist/dashboard-index-canvaskit.zip
+            dist/dashboard-macos
+            dist/dashboard-macos-M1
 
 
 
