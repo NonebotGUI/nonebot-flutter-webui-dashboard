@@ -10,6 +10,8 @@ import 'package:NoneBotWebUI/utils/global.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class MainPageMobile extends StatefulWidget {
   const MainPageMobile({super.key});
 
@@ -66,6 +68,11 @@ class _HomeScreenState extends State<MainPageMobile> {
     super.dispose();
   }
 
+  logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = await prefs.remove('token');
+  }
+
   @override
   Widget build(BuildContext context) {
     dynamic size = MediaQuery.of(context).size;
@@ -77,6 +84,15 @@ class _HomeScreenState extends State<MainPageMobile> {
         title:
             const Text('NoneBot WebUI', style: TextStyle(color: Colors.white)),
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.logout_rounded),
+              tooltip: '登出',
+              color: Colors.white,
+              onPressed: () {
+                html.window.location.reload();
+              })
+        ],
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
@@ -127,7 +143,7 @@ class _HomeScreenState extends State<MainPageMobile> {
                   color: _selectedIndex == 1
                       ? const Color.fromRGBO(234, 84, 84, 1)
                       : Colors.grey[900]),
-              title: Text('管理Bot',
+              title: Text('Bot控制台',
                   style: TextStyle(
                       color: _selectedIndex == 1
                           ? const Color.fromRGBO(234, 84, 84, 1)
@@ -135,7 +151,7 @@ class _HomeScreenState extends State<MainPageMobile> {
               onTap: () {
                 setState(() {
                   _selectedIndex = 1;
-                  title = '管理Bot';
+                  title = 'Bot控制台';
                 });
                 Navigator.pop(context);
               },
@@ -145,7 +161,7 @@ class _HomeScreenState extends State<MainPageMobile> {
                   color: _selectedIndex == 2
                       ? const Color.fromRGBO(234, 84, 84, 1)
                       : Colors.grey[900]),
-              title: Text('创建Bot',
+              title: Text('创建',
                   style: TextStyle(
                       color: _selectedIndex == 2
                           ? const Color.fromRGBO(234, 84, 84, 1)
@@ -153,7 +169,7 @@ class _HomeScreenState extends State<MainPageMobile> {
               onTap: () {
                 setState(() {
                   _selectedIndex = 2;
-                  title = '创建Bot';
+                  title = '创建';
                 });
                 Navigator.pop(context);
               },
@@ -163,7 +179,7 @@ class _HomeScreenState extends State<MainPageMobile> {
                   color: _selectedIndex == 3
                       ? const Color.fromRGBO(234, 84, 84, 1)
                       : Colors.grey[900]),
-              title: Text('导入Bot',
+              title: Text('导入',
                   style: TextStyle(
                       color: _selectedIndex == 3
                           ? const Color.fromRGBO(234, 84, 84, 1)
@@ -171,7 +187,7 @@ class _HomeScreenState extends State<MainPageMobile> {
               onTap: () {
                 setState(() {
                   _selectedIndex = 3;
-                  title = '导入Bot';
+                  title = '导入';
                 });
                 Navigator.pop(context);
               },
@@ -208,6 +224,7 @@ class _HomeScreenState extends State<MainPageMobile> {
                 setState(() {
                   _selectedIndex = 5;
                   title = '开源许可证';
+                  Navigator.pop(context);
                 });
               },
             )
