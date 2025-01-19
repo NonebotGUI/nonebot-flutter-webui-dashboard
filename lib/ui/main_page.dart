@@ -10,6 +10,8 @@ import 'package:NoneBotWebUI/utils/global.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -66,6 +68,12 @@ class _HomeScreenState extends State<MainPage> {
     super.dispose();
   }
 
+  logout() async {
+    // 从 SharedPreference 中删除 token
+    final prefs = await SharedPreferences.getInstance();
+    final token = await prefs.remove('token');
+  }
+
   @override
   Widget build(BuildContext context) {
     dynamic size = MediaQuery.of(context).size;
@@ -77,6 +85,17 @@ class _HomeScreenState extends State<MainPage> {
         title:
             const Text('NoneBot WebUI', style: TextStyle(color: Colors.white)),
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            color: Colors.white,
+            tooltip: '登出',
+            onPressed: () {
+              logout();
+              html.window.location.reload();
+            },
+          )
+        ],
       ),
       body: Row(
         children: [
@@ -108,10 +127,10 @@ class _HomeScreenState extends State<MainPage> {
                     title = 'Bot控制台';
                     break;
                   case 2:
-                    title = '创建Bot';
+                    title = '创建';
                     break;
                   case 3:
-                    title = '导入Bot';
+                    title = '导入';
                     break;
                   case 4:
                     title = '关于';
@@ -150,7 +169,7 @@ class _HomeScreenState extends State<MainPage> {
                         ? Icons.add_rounded
                         : Icons.add_outlined,
                   ),
-                  label: const Text('创建Bot'),
+                  label: const Text('创建'),
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 15)),
               NavigationRailDestination(
                   icon: Icon(
@@ -158,7 +177,7 @@ class _HomeScreenState extends State<MainPage> {
                         ? Icons.file_download_rounded
                         : Icons.file_download_outlined,
                   ),
-                  label: const Text('导入Bot'),
+                  label: const Text('导入'),
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 15)),
               NavigationRailDestination(
                   icon: Icon(
