@@ -70,7 +70,7 @@ class _HomeScreenState extends State<MainPageMobile> {
 
   logout() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = await prefs.remove('token');
+    await prefs.remove('token');
   }
 
   @override
@@ -90,6 +90,7 @@ class _HomeScreenState extends State<MainPageMobile> {
               tooltip: '登出',
               color: Colors.white,
               onPressed: () {
+                logout();
                 html.window.location.reload();
               })
         ],
