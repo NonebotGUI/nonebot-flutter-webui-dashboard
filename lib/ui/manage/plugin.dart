@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:NoneBotWebUI/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:NoneBotWebUI/assets/my_flutter_app_icons.dart';
-import 'package:flutter/services.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 
 class PluginStore extends StatefulWidget {
   const PluginStore({super.key});
@@ -168,24 +168,27 @@ class _MyHomePageState extends State<PluginStore> {
                                     },
                                     tooltip: '安装插件',
                                     icon: const Icon(Icons.download_rounded),
-                                    iconSize: 25,
+                                  ),
+                                  const SizedBox(
+                                    width: 8,
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      Clipboard.setData(ClipboardData(
-                                        text: plugins['homepage'],
-                                      ));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text('项目仓库链接已复制到剪贴板'),
-                                          duration: Duration(seconds: 3),
-                                        ),
-                                      );
+                                      html.window
+                                          .open(plugins['homepage'], 'New tab');
                                     },
-                                    tooltip: '复制仓库地址',
+                                    tooltip: '查看主页',
                                     icon: const Icon(MyFlutterApp.github),
-                                    iconSize: 25,
+                                  ),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  IconButton(
+                                    tooltip: '查看商店检查结果',
+                                    icon: const Icon(Icons.info_rounded),
+                                    onPressed: () => html.window.open(
+                                        'https://registry.nonebot.dev/plugin/${plugins['project_link']}:${plugins['module_name']}',
+                                        'New tab'),
                                   ),
                                 ],
                               ),

@@ -4,7 +4,8 @@ import 'package:NoneBotWebUI/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:NoneBotWebUI/assets/my_flutter_app_icons.dart';
-import 'package:flutter/services.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 
 class AdapterStore extends StatefulWidget {
   const AdapterStore({super.key});
@@ -175,20 +176,11 @@ class _MyHomePageState extends State<AdapterStore> {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      Clipboard.setData(ClipboardData(
-                                        text: adapters['homepage'],
-                                      ));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text('项目仓库链接已复制到剪贴板'),
-                                          duration: Duration(seconds: 3),
-                                        ),
-                                      );
+                                      html.window.open(
+                                          adapters['homepage'], 'New tab');
                                     },
-                                    tooltip: '复制仓库地址',
+                                    tooltip: '查看主页',
                                     icon: const Icon(MyFlutterApp.github),
-                                    iconSize: 25,
                                   ),
                                 ],
                               ),
