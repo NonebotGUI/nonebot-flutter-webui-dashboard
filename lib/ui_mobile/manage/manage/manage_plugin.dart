@@ -71,7 +71,7 @@ class _HomeScreenState extends State<ManagePlugin> {
         ),
       ),
       body: Container(
-        margin: const EdgeInsets.fromLTRB(32, 20, 32, 12),
+        margin: const EdgeInsets.fromLTRB(8, 12, 8, 16),
         child: Column(
           children: <Widget>[
             _selectedIndex == 0

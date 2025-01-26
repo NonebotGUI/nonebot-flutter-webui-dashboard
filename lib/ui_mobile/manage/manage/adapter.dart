@@ -4,7 +4,7 @@ import 'package:NoneBotWebUI/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:NoneBotWebUI/assets/my_flutter_app_icons.dart';
-import 'package:flutter/services.dart';
+import 'dart:html' as html;
 
 class AdapterStoreMobile extends StatefulWidget {
   const AdapterStoreMobile({super.key});
@@ -106,10 +106,145 @@ class _MyHomePageState extends State<AdapterStoreMobile> {
                   ),
                   itemCount: search.length,
                   itemBuilder: (BuildContext context, int index) {
-                    final plugins = search[index];
+                    final adapters = search[index];
                     return Card(
                       child: InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: ((context) {
+                                return Center(
+                                  child: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.8,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.8,
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                      ),
+                                      child: Container(
+                                        margin: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          children: <Widget>[
+                                            Expanded(
+                                              flex: 14,
+                                              child: ListView(
+                                                children: <Widget>[
+                                                  _item(
+                                                    '名称',
+                                                    adapters['name'],
+                                                  ),
+                                                  _item('模块名',
+                                                      adapters['module_name']),
+                                                  _item(
+                                                      '作者', adapters['author']),
+                                                  _item(
+                                                      '描述',
+                                                      adapters['desc'] == ''
+                                                          ? '无'
+                                                          : adapters['desc']),
+                                                ],
+                                              ),
+                                            ),
+                                            const Divider(
+                                              color: Colors.grey,
+                                            ),
+                                            Expanded(
+                                              flex: 1,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: <Widget>[
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      Map data = {
+                                                        'id': gOnOpen,
+                                                        'name': adapters[
+                                                                'module_name']
+                                                            .toString()
+                                                            .replaceAll(
+                                                                'adapters',
+                                                                'adapter')
+                                                            .replaceAll(
+                                                                '.', '-')
+                                                            .replaceAll(
+                                                                '-v11', ''),
+                                                      };
+                                                      String dataStr =
+                                                          jsonEncode(data);
+                                                      socket.send(
+                                                          'adapter/install?data=$dataStr?token=${Config.token}');
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return const InstallingBot();
+                                                        },
+                                                      );
+                                                    },
+                                                    tooltip: '安装适配器',
+                                                    icon: const Icon(
+                                                        Icons.download_rounded),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      html.window.open(
+                                                          adapters['homepage'],
+                                                          'New tab');
+                                                    },
+                                                    tooltip: '查看主页',
+                                                    icon: const Icon(
+                                                        MyFlutterApp.github),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(const Color
+                                                                  .fromRGBO(234,
+                                                                  82, 82, 1)),
+                                                      shape: MaterialStateProperty.all(
+                                                          const RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          10.0)))),
+                                                      minimumSize:
+                                                          MaterialStateProperty
+                                                              .all(const Size(
+                                                                  100, 40)),
+                                                    ),
+                                                    child: const Text(
+                                                      '关闭',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }));
+                        },
                         child: Stack(
                           children: <Widget>[
                             Padding(
@@ -118,21 +253,17 @@ class _MyHomePageState extends State<AdapterStoreMobile> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    plugins['name'],
+                                    adapters['name'],
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(plugins['module_name'],
+                                  Text(adapters['module_name'],
                                       style: const TextStyle(
                                           color: Colors.grey, fontSize: 12),
                                       overflow: TextOverflow.fade),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    plugins['desc'],
-                                    overflow: TextOverflow.fade,
-                                  ),
                                 ],
                               ),
                             ),
@@ -140,7 +271,7 @@ class _MyHomePageState extends State<AdapterStoreMobile> {
                               left: 4,
                               bottom: 4,
                               child: Text(
-                                'By ${plugins['author']}',
+                                'By ${adapters['author']}',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey,
@@ -156,11 +287,15 @@ class _MyHomePageState extends State<AdapterStoreMobile> {
                                     onPressed: () {
                                       Map data = {
                                         'id': gOnOpen,
-                                        'name': plugins['module_name']
+                                        'name': adapters['module_name']
+                                            .toString()
+                                            .replaceAll('adapters', 'adapter')
+                                            .replaceAll('.', '-')
+                                            .replaceAll('-v11', ''),
                                       };
                                       String dataStr = jsonEncode(data);
                                       socket.send(
-                                          'plugin/install?data=$dataStr?token=${Config.token}');
+                                          'adpater/install?data=$dataStr?token=${Config.token}');
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
@@ -168,24 +303,16 @@ class _MyHomePageState extends State<AdapterStoreMobile> {
                                         },
                                       );
                                     },
-                                    tooltip: '安装插件',
+                                    tooltip: '安装适配器',
                                     icon: const Icon(Icons.download_rounded),
                                     iconSize: 25,
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      Clipboard.setData(ClipboardData(
-                                        text: plugins['homepage'],
-                                      ));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text('项目仓库链接已复制到剪贴板'),
-                                          duration: Duration(seconds: 3),
-                                        ),
-                                      );
+                                      html.window.open(
+                                          adapters['homepage'], 'New tab');
                                     },
-                                    tooltip: '复制仓库地址',
+                                    tooltip: '查看主页',
                                     icon: const Icon(MyFlutterApp.github),
                                     iconSize: 25,
                                   ),
@@ -199,6 +326,39 @@ class _MyHomePageState extends State<AdapterStoreMobile> {
                   },
                 ),
               ));
+  }
+
+  // 组件模板
+  Widget _item(String title, content) {
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(4),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              textScaler: const TextScaler.linear(1.15),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(4),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              content,
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 4,
+        ),
+      ],
+    );
   }
 }
 
