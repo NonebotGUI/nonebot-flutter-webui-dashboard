@@ -11,7 +11,8 @@ import 'dart:html' as html;
 import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
-  version = '0.1.7';
+  version = '0.1.8';
+  debug = false;
   // FlutterError.onError = (FlutterErrorDetails details) async {
   //   print('FlutterError: ${details.exception}');
   //   print('StackTrace: ${details.stack}');
@@ -211,27 +212,8 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               child: ElevatedButton(
                 onPressed: () async {
-                  final password = myController.text;
-                  final res = await http.post(Uri.parse('/auth'),
-                      body: jsonEncode({'password': password}),
-                      headers: {"Content-Type": "application/json"});
-                  if (res.statusCode == 200) {
-                    final getConfig = await http.get(
-                      Uri.parse('/config'),
-                      headers: {"Authorization": 'Bearer ${res.body}'},
-                    );
-                    final config = jsonDecode(getConfig.body);
-                    final connection = config['connection'];
-                    Config.wsHost = connection['host'];
-                    Config.wsPort = connection['port'];
-                    Config.token = connection['token'];
-                    Config.connectionMode = config['connectionMode'];
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.setString('token', res.body);
-                    setState(() {});
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('欢迎回来！'),
-                    ));
+                  if (debug) {
+                    Config.token = '114514';
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
@@ -244,9 +226,43 @@ class _LoginPageState extends State<LoginPage> {
                       (Route<dynamic> route) => false,
                     );
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('验证失败了喵'),
-                    ));
+                    final password = myController.text;
+                    final res = await http.post(Uri.parse('/auth'),
+                        body: jsonEncode({'password': password}),
+                        headers: {"Content-Type": "application/json"});
+                    if (res.statusCode == 200) {
+                      final getConfig = await http.get(
+                        Uri.parse('/config'),
+                        headers: {"Authorization": 'Bearer ${res.body}'},
+                      );
+                      final config = jsonDecode(getConfig.body);
+                      final connection = config['connection'];
+                      Config.wsHost = connection['host'];
+                      Config.wsPort = connection['port'];
+                      Config.token = connection['token'];
+                      Config.connectionMode = config['connectionMode'];
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setString('token', res.body);
+                      setState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('欢迎回来！'),
+                      ));
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              (MediaQuery.of(context).size.width >
+                                      MediaQuery.of(context).size.height)
+                                  ? const MainPage()
+                                  : const MainPageMobile(),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('验证失败了喵'),
+                      ));
+                    }
                   }
                 },
                 style: ButtonStyle(

@@ -64,3 +64,6 @@ class Data {
   /// 安装Bot时的日志
   static List installBotLog = [];
 }
+
+// 神秘开关
+bool debug = false;
