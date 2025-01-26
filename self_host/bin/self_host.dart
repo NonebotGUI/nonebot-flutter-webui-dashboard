@@ -10,6 +10,7 @@ import 'package:shelf_web_socket/shelf_web_socket.dart';
 import '../utils/global.dart';
 import '../utils/logger.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:http/http.dart' as http;
 
 WebSocket? socketToAgent;
 int wsStatus = 0;
@@ -24,7 +25,8 @@ void main() async {
       "port": 8025,
       "password": "123456",
       "connection": {"host": "127.0.0.1", "port": 2519, "token": "123456"},
-      "connectionMode": 1
+      "connectionMode": 2,
+      "checkUpdate": true
     };
     String cfgStr = JsonEncoder.withIndent('  ').convert(cfg);
     File('config.json').writeAsStringSync(cfgStr);
@@ -37,6 +39,9 @@ void main() async {
   Config.wsHost = configJson['connection']['host'];
   Config.wsPort = configJson['connection']['port'];
   Config.wsToken = configJson['connection']['token'];
+  Config.checkUpdate = (configJson.containsKey('checkUpdate'))
+      ? configJson['checkUpdate']
+      : true;
   Config.connectionMode = (configJson.containsKey('connectionMode'))
       ? configJson['connectionMode']
       : 2;
@@ -47,7 +52,7 @@ void main() async {
   }
   if (Config.token.isEmpty) {
     Logger.error('Please set the password in the configuration file.');
-    exit(1);
+    Future.delayed(Duration(seconds: 5)).then((value) => exit(1));
   }
   if (!File("secret.key").existsSync()) {
     Logger.info('Generating secret key...');
@@ -119,6 +124,11 @@ void main() async {
 
   var server = await shelf_io.serve(finalHandler, Config.host, Config.port,
       shared: true);
+  Logger.info('Dashboard server started');
+  Logger.info('Dashboard version: $version');
+  if (Config.checkUpdate) {
+    await check();
+  }
   if (Config.host.contains('::')) {
     Logger.info('Listening on http://[${server.address.host}]:${server.port}');
   } else {
@@ -282,4 +292,34 @@ String generateSecretKey(int length) {
   final random = Random.secure();
   final key = List<int>.generate(length, (_) => random.nextInt(256));
   return base64UrlEncode(key);
+}
+
+Future<void> check() async {
+  try {
+    final response = await http.get(Uri.parse(
+        'https://api.github.com/repos/NonebotGUI/nonebot-flutter-webui-dashboard/releases/latest'));
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final tagName = jsonData['tag_name'];
+      final url = jsonData['html_url'];
+      if (tagName.toString().replaceAll('v', '') != version) {
+        Logger.rainbow('New version',
+            '################################################################');
+        Logger.rainbow('New version',
+            '##                                                            ##');
+        Logger.rainbow('New version',
+            '##       A new version of Nonebot Agent is available!         ##');
+        Logger.rainbow('New version',
+            '##                                                            ##');
+        Logger.rainbow('New version',
+            '################################################################');
+        Logger.info('New version found: $tagName');
+        Logger.info('To download the latest version, please visit: $url');
+      }
+    } else {
+      Logger.error('Failed to check for updates');
+    }
+  } catch (e) {
+    Logger.error('Failed to check for updates: $e');
+  }
 }

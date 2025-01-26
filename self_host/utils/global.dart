@@ -3,6 +3,7 @@ import 'dart:io';
 late WebSocket socketToAgent;
 late WebSocket socketToClient;
 int wsStatus = 0;
+String version = '0.1.5';
 
 /// 用户配置
 class Config {
@@ -25,5 +26,8 @@ class Config {
   static String wsToken = '';
 
   /// 连接模式
-  static int connectionMode = 1;
+  static int connectionMode = 2;
+
+  /// 是否检查更新
+  static bool checkUpdate = true;
 }
