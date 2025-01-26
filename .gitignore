@@ -38,3 +38,4 @@ tem.dart
 self_host/web/
 self_host/config.json
 build-test.sh
+self_host/secret.key
