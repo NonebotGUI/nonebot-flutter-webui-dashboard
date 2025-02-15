@@ -31,6 +31,7 @@ void main() async {
         "color": "light",
         "img": "default",
         "text": "default",
+        "hitokoto": true
       }
     };
     String cfgStr = JsonEncoder.withIndent('  ').convert(cfg);
@@ -56,6 +57,7 @@ void main() async {
           "color": "light",
           "img": "default",
           "text": "default",
+          "hitokoto": true
         };
   if (!configJson.containsKey('connectionMode')) {
     configJson['connectionMode'] = 2;
