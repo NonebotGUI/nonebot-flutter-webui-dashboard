@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:NoneBotWebUI/ui/main_page.dart';
 import 'package:NoneBotWebUI/ui_mobile/main_page.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
 // ignore: avoid_web_libraries_in_flutter
@@ -11,20 +12,46 @@ import 'dart:html' as html;
 import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
-  version = '0.1.8';
+  WidgetsFlutterBinding.ensureInitialized();
+  version = '0.1.9';
   debug = false;
-  // FlutterError.onError = (FlutterErrorDetails details) async {
-  //   print('FlutterError: ${details.exception}');
-  //   print('StackTrace: ${details.stack}');
-  //   await http.post(
-  //     Uri.parse('/log'),
-  //     body: jsonEncode({
-  //       'error': details.exception.toString(),
-  //       'stack': details.stack.toString(),
-  //     }),
-  //   );
-  // };
-  runApp(const MyApp());
+
+  String initialThemeMode = 'light';
+  final themeResponse = await http.get(Uri.parse('/theme'));
+  if (themeResponse.statusCode == 200) {
+    final themeData = jsonDecode(themeResponse.body);
+    Config.theme = themeData;
+    initialThemeMode = themeData['color'] ?? 'light';
+  }
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeNotifier(initialThemeMode),
+      child: const MyApp(),
+    ),
+  );
+}
+
+class ThemeNotifier extends ChangeNotifier {
+  ThemeData _themeData;
+  String _themeMode;
+
+  ThemeNotifier(String initialMode)
+      : _themeMode = initialMode,
+        _themeData = _getTheme(initialMode);
+
+  ThemeData get themeData => _themeData;
+
+  void toggleTheme() {
+    if (_themeMode == 'light') {
+      _themeMode = 'dark';
+      _themeData = _getTheme('dark');
+    } else {
+      _themeMode = 'light';
+      _themeData = _getTheme('light');
+    }
+    notifyListeners();
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -32,8 +59,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+
     return MaterialApp(
-      theme: ThemeData(
+      theme: themeNotifier.themeData,
+      home: const LoginPage(),
+    );
+  }
+}
+
+///颜色主题
+ThemeData _getTheme(mode) {
+  switch (mode) {
+    case 'light':
+      return ThemeData.light().copyWith(
+          canvasColor: const Color.fromRGBO(254, 239, 239, 1),
           primaryColor: const Color.fromRGBO(234, 82, 82, 1),
           buttonTheme: const ButtonThemeData(
             buttonColor: Color.fromRGBO(234, 82, 82, 1),
@@ -55,9 +95,47 @@ class MyApp extends StatelessWidget {
               backgroundColor: Color.fromRGBO(234, 82, 82, 1)),
           switchTheme: const SwitchThemeData(
               trackColor:
-                  MaterialStatePropertyAll(Color.fromRGBO(234, 82, 82, 1)))),
-      home: const LoginPage(),
-    );
+                  MaterialStatePropertyAll(Color.fromRGBO(234, 82, 82, 1))));
+    case 'dark':
+      return ThemeData.dark().copyWith(
+          canvasColor: const Color.fromRGBO(18, 18, 18, 1),
+          primaryColor: const Color.fromRGBO(147, 112, 219, 1),
+          buttonTheme: const ButtonThemeData(
+            buttonColor: Color.fromRGBO(147, 112, 219, 1),
+          ),
+          checkboxTheme: const CheckboxThemeData(
+              checkColor: MaterialStatePropertyAll(
+            Color.fromRGBO(147, 112, 219, 1),
+          )),
+          progressIndicatorTheme: const ProgressIndicatorThemeData(
+            color: Color.fromRGBO(147, 112, 219, 1),
+          ),
+          appBarTheme: const AppBarTheme(
+            color: Color.fromRGBO(147, 112, 219, 1),
+          ),
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+              backgroundColor: Color.fromRGBO(147, 112, 219, 1)),
+          switchTheme: const SwitchThemeData(
+              trackColor:
+                  MaterialStatePropertyAll(Color.fromRGBO(147, 112, 219, 1))));
+    default:
+      return ThemeData.light().copyWith(
+        canvasColor: const Color.fromRGBO(254, 239, 239, 1),
+        primaryColor: const Color.fromRGBO(234, 82, 82, 1),
+        buttonTheme:
+            const ButtonThemeData(buttonColor: Color.fromRGBO(234, 82, 82, 1)),
+        checkboxTheme: const CheckboxThemeData(
+            checkColor:
+                MaterialStatePropertyAll(Color.fromRGBO(234, 82, 82, 1))),
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+            color: Color.fromRGBO(234, 82, 82, 1)),
+        appBarTheme: const AppBarTheme(color: Color.fromRGBO(234, 82, 82, 1)),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            backgroundColor: Color.fromRGBO(234, 82, 82, 1)),
+        switchTheme: const SwitchThemeData(
+            trackColor:
+                MaterialStatePropertyAll(Color.fromRGBO(234, 82, 82, 1))),
+      );
   }
 }
 
@@ -84,7 +162,6 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _register();
-    _autoLogin();
   }
 
   // 自动登录
@@ -140,17 +217,25 @@ class _LoginPageState extends State<LoginPage> {
               width: screenWidth,
               height: screenHeight * 0.075,
             ),
-            Image.asset(
-              'lib/assets/logo.png',
-              width: logoSize,
-              height: logoSize,
-            ),
+            Config.theme['img'] == 'default'
+                ? Image.asset(
+                    'lib/assets/logo.png',
+                    width: logoSize,
+                    height: logoSize,
+                  )
+                : Image.network(
+                    Config.theme['img'],
+                    width: logoSize,
+                    height: logoSize,
+                  ),
             // const SizedBox(
             //   height: 4,
             // ),
-            const Text(
-              '登录到 NoneBot WebUI',
-              style: TextStyle(
+            Text(
+              Config.theme['text'] == 'default'
+                  ? '登录到 NoneBot WebUI'
+                  : Config.theme['text'],
+              style: const TextStyle(
                 fontSize: 24,
               ),
             ),
@@ -267,7 +352,10 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
-                      const Color.fromRGBO(234, 82, 82, 1)),
+                      Config.theme['color'] == 'default' ||
+                              Config.theme['color'] == 'light'
+                          ? const Color.fromRGBO(234, 82, 82, 1)
+                          : const Color.fromRGBO(147, 112, 219, 1)),
                   shape: MaterialStateProperty.all(const CircleBorder()),
                   iconSize: MaterialStateProperty.all(24),
                   minimumSize:
