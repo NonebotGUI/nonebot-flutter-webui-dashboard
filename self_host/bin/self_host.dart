@@ -26,7 +26,12 @@ void main() async {
       "password": "123456",
       "connection": {"host": "127.0.0.1", "port": 2519, "token": "123456"},
       "connectionMode": 2,
-      "checkUpdate": true
+      "checkUpdate": true,
+      "theme": {
+        "color": "light",
+        "img": "default",
+        "text": "default",
+      }
     };
     String cfgStr = JsonEncoder.withIndent('  ').convert(cfg);
     File('config.json').writeAsStringSync(cfgStr);
@@ -45,6 +50,13 @@ void main() async {
   Config.connectionMode = (configJson.containsKey('connectionMode'))
       ? configJson['connectionMode']
       : 2;
+  Config.theme = (configJson.containsKey('theme'))
+      ? configJson['theme']
+      : {
+          "color": "light",
+          "img": "default",
+          "text": "default",
+        };
   if (!configJson.containsKey('connectionMode')) {
     configJson['connectionMode'] = 2;
     File('config.json')
@@ -100,6 +112,13 @@ void main() async {
     Logger.debug(body);
     return Response.ok('Log received');
   });
+
+  // 主题配置
+  router.get('/theme', (Request request) {
+    return Response.ok(jsonEncode(Config.theme),
+        headers: {'Content-Type': 'application/json'});
+  });
+
   // WebSocket 路由
   router.get('/app/protocol/ws', (Request request) {
     return wsHandler(request);
@@ -116,6 +135,8 @@ void main() async {
     } else if (request.url.path.startsWith('log')) {
       return handler(request);
     } else if (request.url.path.startsWith('auth')) {
+      return handler(request);
+    } else if (request.url.path.startsWith('theme')) {
       return handler(request);
     } else {
       return staticHandlerWithLogging(request);
@@ -159,7 +180,7 @@ Middleware jwtMiddleware = (Handler handler) {
       final token = authHeader.substring(7);
       try {
         String secret = File('secret.key').readAsStringSync();
-        final jwt = JWT.verify(token, SecretKey(secret));
+        JWT.verify(token, SecretKey(secret));
         return handler(request);
       } catch (e) {
         return Response.forbidden('Invalid token');
