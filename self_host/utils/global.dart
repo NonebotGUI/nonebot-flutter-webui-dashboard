@@ -3,7 +3,7 @@ import 'dart:io';
 late WebSocket socketToAgent;
 late WebSocket socketToClient;
 int wsStatus = 0;
-String version = '0.1.8';
+String version = '0.1.9';
 
 /// 用户配置
 class Config {
@@ -30,4 +30,11 @@ class Config {
 
   /// 是否检查更新
   static bool checkUpdate = true;
+
+  // 主题
+  static Map theme = {
+    "color": "light",
+    "img": "default",
+    "text": "default",
+  };
 }

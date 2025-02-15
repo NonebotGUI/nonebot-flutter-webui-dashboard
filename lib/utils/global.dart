@@ -24,6 +24,16 @@ class Config {
   /// 1;直连Agent
   /// 2;通过Self Host Protocol连接Agent
   static int connectionMode = 2;
+
+  /// 主题
+  static Map theme = {
+    "color": "default",
+    "img": "default",
+    "text": "default",
+  };
+
+  /// 是否启用一言
+  static bool hitokoto = true;
 }
 
 /// 应用程序数据
