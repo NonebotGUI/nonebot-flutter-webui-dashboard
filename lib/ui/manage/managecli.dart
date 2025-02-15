@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_web_libraries_in_flutter
+
 import 'package:NoneBotWebUI/ui/manage/adapter.dart';
 import 'package:NoneBotWebUI/ui/manage/driver.dart';
 // import 'package:NoneBotWebUI/ui/manage/driver.dart';
@@ -5,6 +7,7 @@ import 'package:NoneBotWebUI/ui/manage/driver.dart';
 // import 'package:NoneBotWebUI/ui/manage/manage_cli.dart';
 import 'package:NoneBotWebUI/ui/manage/manage_plugin.dart';
 import 'package:NoneBotWebUI/ui/manage/plugin.dart';
+import 'package:NoneBotWebUI/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'dart:html' as html;
 
@@ -52,18 +55,31 @@ class _HomeScreenState extends State<ManageCli> {
             NavigationRail(
               useIndicator: false,
               selectedIconTheme: IconThemeData(
-                  color: const Color.fromRGBO(234, 82, 82, 1),
+                  color: Config.theme['color'] == 'light' ||
+                          Config.theme['color'] == 'default'
+                      ? const Color.fromRGBO(234, 82, 82, 1)
+                      : const Color.fromRGBO(147, 112, 219, 1),
                   size: height * 0.03),
               selectedLabelTextStyle: TextStyle(
-                color: const Color.fromRGBO(234, 82, 82, 1),
+                color: Config.theme['color'] == 'light' ||
+                        Config.theme['color'] == 'default'
+                    ? const Color.fromRGBO(234, 82, 82, 1)
+                    : const Color.fromRGBO(147, 112, 219, 1),
                 fontSize: height * 0.02,
               ),
               unselectedLabelTextStyle: TextStyle(
                 fontSize: height * 0.02,
-                color: Colors.grey[600],
+                color: Config.theme['color'] == 'light' ||
+                        Config.theme['color'] == 'default'
+                    ? Colors.grey[600]
+                    : Colors.white,
               ),
-              unselectedIconTheme:
-                  IconThemeData(color: Colors.grey, size: height * 0.03),
+              unselectedIconTheme: IconThemeData(
+                  color: Config.theme['color'] == 'light' ||
+                          Config.theme['color'] == 'default'
+                      ? Colors.grey[600]
+                      : Colors.white,
+                  size: height * 0.03),
               elevation: 2,
               minExtendedWidth: 200,
               indicatorShape: const RoundedRectangleBorder(),

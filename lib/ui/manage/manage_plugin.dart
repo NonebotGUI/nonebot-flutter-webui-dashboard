@@ -83,73 +83,73 @@ class _HomeScreenState extends State<ManagePlugin> {
                         child: ListView.separated(
                           itemCount: pluginList.length,
                           separatorBuilder: (BuildContext context, int index) {
-                          return const Divider();
+                            return const Divider();
                           },
                           itemBuilder: (BuildContext context, int index) {
-                          if (pluginList[index].isEmpty) {
-                            return const SizedBox.shrink();
-                          }
-                          return ListTile(
-                            title: Text(pluginList[index]),
-                            trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                              icon: const Icon(Icons
-                                .do_not_disturb_on_total_silence_rounded),
-                              tooltip: '禁用',
-                              onPressed: () {
-                                Map data = {
-                                'name': pluginList[index],
-                                'id': Data.botInfo['id'],
-                                };
-                                String dataStr = jsonEncode(data);
-                                setState(() {
-                                socket.send(
-                                  'plugin/disable?data=$dataStr?token=${Config.token}');
-                                });
-                              },
-                              ),
-                              IconButton(
-                              icon: const Icon(Icons.delete),
-                              tooltip: '卸载',
-                              onPressed: () {
-                                showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                  title: const Text('确定卸载插件'),
-                                  content: Text(
-                                    '你确定要卸载插件 ${pluginList[index]} 吗？'),
-                                  actions: <Widget>[
-                                    TextButton(
+                            if (pluginList[index].isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+                            return ListTile(
+                              title: Text(pluginList[index]),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons
+                                        .do_not_disturb_on_total_silence_rounded),
+                                    tooltip: '禁用',
                                     onPressed: () {
-                                      Navigator.of(context).pop();
+                                      Map data = {
+                                        'name': pluginList[index],
+                                        'id': Data.botInfo['id'],
+                                      };
+                                      String dataStr = jsonEncode(data);
+                                      setState(() {
+                                        socket.send(
+                                            'plugin/disable?data=$dataStr?token=${Config.token}');
+                                      });
                                     },
-                                    child: const Text('取消'),
-                                    ),
-                                    TextButton(
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    tooltip: '卸载',
                                     onPressed: () {
-                                      _uninstall(pluginList[index]);
-                                      Navigator.of(context).pop();
-                                      ScaffoldMessenger.of(context)
-                                        .showSnackBar(
-                                      const SnackBar(
-                                        content: Text('卸载请求已发送'),
-                                      ),
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('确定卸载插件'),
+                                            content: Text(
+                                                '你确定要卸载插件 ${pluginList[index]} 吗？'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text('取消'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  _uninstall(pluginList[index]);
+                                                  Navigator.of(context).pop();
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text('卸载请求已发送'),
+                                                    ),
+                                                  );
+                                                },
+                                                child: const Text('确定'),
+                                              ),
+                                            ],
+                                          );
+                                        },
                                       );
                                     },
-                                    child: const Text('确定'),
-                                    ),
-                                  ],
-                                  );
-                                },
-                                );
-                              },
+                                  ),
+                                ],
                               ),
-                            ],
-                            ),
-                          );
+                            );
                           },
                         ),
                       )
@@ -163,36 +163,36 @@ class _HomeScreenState extends State<ManagePlugin> {
                         child: ListView.separated(
                           itemCount: disabledPluginList.length,
                           separatorBuilder: (BuildContext context, int index) {
-                          return const Divider();
+                            return const Divider();
                           },
                           itemBuilder: (BuildContext context, int index) {
-                          if (disabledPluginList[index].isEmpty) {
-                            return const SizedBox.shrink();
-                          }
-                          return ListTile(
-                            title: Text(disabledPluginList[index]),
-                            trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                              icon: const Icon(
-                                Icons.open_in_browser_rounded),
-                              tooltip: '启用',
-                              onPressed: () {
-                                Map data = {
-                                'name': disabledPluginList[index],
-                                'id': Data.botInfo['id'],
-                                };
-                                String dataStr = jsonEncode(data);
-                                setState(() {
-                                socket.send(
-                                  'plugin/enable?data=$dataStr?token=${Config.token}');
-                                });
-                              },
+                            if (disabledPluginList[index].isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+                            return ListTile(
+                              title: Text(disabledPluginList[index]),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                        Icons.open_in_browser_rounded),
+                                    tooltip: '启用',
+                                    onPressed: () {
+                                      Map data = {
+                                        'name': disabledPluginList[index],
+                                        'id': Data.botInfo['id'],
+                                      };
+                                      String dataStr = jsonEncode(data);
+                                      setState(() {
+                                        socket.send(
+                                            'plugin/enable?data=$dataStr?token=${Config.token}');
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
-                            ],
-                            ),
-                          );
+                            );
                           },
                         ),
                       ),
@@ -211,7 +211,10 @@ class _HomeScreenState extends State<ManagePlugin> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromRGBO(234, 82, 82, 1),
+        selectedItemColor: Config.theme['color'] == 'light' ||
+                Config.theme['color'] == 'default'
+            ? const Color.fromRGBO(234, 82, 82, 1)
+            : const Color.fromRGBO(147, 112, 219, 1),
         onTap: _onItemTapped,
       ),
     );

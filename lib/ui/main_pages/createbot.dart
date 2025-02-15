@@ -352,7 +352,6 @@ class _MyCustomFormState extends State<CreateBot> {
           }
         },
         tooltip: '完成',
-        backgroundColor: Color.fromRGBO(234, 84, 84, 1),
         shape: const CircleBorder(),
         child: const Icon(
           Icons.done_rounded,
@@ -467,7 +466,11 @@ class _InstallingBotState extends State<InstallingBot> {
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(
-                            const Color.fromRGBO(234, 82, 82, 1)),
+                          Config.theme['color'] == 'light' ||
+                                  Config.theme['color'] == 'default'
+                              ? const Color.fromRGBO(234, 82, 82, 1)
+                              : const Color.fromRGBO(147, 112, 219, 1),
+                        ),
                         shape: MaterialStateProperty.all(
                             const RoundedRectangleBorder(
                                 borderRadius:

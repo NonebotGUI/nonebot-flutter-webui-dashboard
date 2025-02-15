@@ -154,7 +154,7 @@ class _HomeScreenState extends State<importBot> {
                                                 border: OutlineInputBorder(
                                                   borderSide: BorderSide(
                                                     color: Color.fromRGBO(
-                                                        238, 109, 109, 1),
+                                                        234, 82, 82, 1),
                                                     width: 5.0,
                                                   ),
                                                 ),
@@ -182,7 +182,7 @@ class _HomeScreenState extends State<importBot> {
                                                 border: OutlineInputBorder(
                                                   borderSide: BorderSide(
                                                     color: Color.fromRGBO(
-                                                        238, 109, 109, 1),
+                                                        234, 82, 82, 1),
                                                     width: 5.0,
                                                   ),
                                                 ),
