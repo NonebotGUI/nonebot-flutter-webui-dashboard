@@ -13,7 +13,7 @@ import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  version = '0.1.9';
+  version = '0.1.9+2';
   debug = false;
 
   String initialThemeMode = 'light';
@@ -21,6 +21,7 @@ void main() async {
   if (themeResponse.statusCode == 200) {
     final themeData = jsonDecode(themeResponse.body);
     Config.theme = themeData;
+    Config.hitokoto = themeData['hitokoto'];
     initialThemeMode = themeData['color'] ?? 'light';
   }
 
@@ -162,6 +163,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _register();
+    _autoLogin();
   }
 
   // 自动登录
