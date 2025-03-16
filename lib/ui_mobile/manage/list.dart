@@ -1,4 +1,4 @@
-import 'package:NoneBotWebUI/ui/manage/env.dart';
+import 'package:NoneBotWebUI/ui_mobile/manage/env.dart';
 import 'package:NoneBotWebUI/ui_mobile/manage/manage/adapter.dart';
 import 'package:NoneBotWebUI/ui_mobile/manage/manage/driver.dart';
 import 'package:NoneBotWebUI/ui_mobile/manage/manage/manage_plugin.dart';
