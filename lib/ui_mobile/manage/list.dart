@@ -1,3 +1,4 @@
+import 'package:NoneBotWebUI/ui/manage/env.dart';
 import 'package:NoneBotWebUI/ui_mobile/manage/manage/adapter.dart';
 import 'package:NoneBotWebUI/ui_mobile/manage/manage/driver.dart';
 import 'package:NoneBotWebUI/ui_mobile/manage/manage/manage_plugin.dart';
@@ -77,6 +78,18 @@ class _HomeScreenState extends State<Managecli> {
                   },
                   child: const ListTile(
                     title: Text('插件管理'),
+                  ),
+                ),
+                const Divider(),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const EditEnv();
+                    }));
+                  },
+                  child: const ListTile(
+                    title: Text('env配置'),
                   ),
                 ),
               ],
