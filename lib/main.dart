@@ -13,16 +13,19 @@ import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  version = '0.1.9+2';
+  version = '0.1.10';
   debug = false;
 
   String initialThemeMode = 'light';
-  final themeResponse = await http.get(Uri.parse('/theme'));
-  if (themeResponse.statusCode == 200) {
-    final themeData = jsonDecode(themeResponse.body);
-    Config.theme = themeData;
-    Config.hitokoto = themeData['hitokoto'];
-    initialThemeMode = themeData['color'] ?? 'light';
+
+  if (!debug) {
+    final themeResponse = await http.get(Uri.parse('/theme'));
+    if (themeResponse.statusCode == 200) {
+      final themeData = jsonDecode(themeResponse.body);
+      Config.theme = themeData;
+      Config.hitokoto = themeData['hitokoto'];
+      initialThemeMode = themeData['color'] ?? 'light';
+    }
   }
 
   runApp(
@@ -163,11 +166,13 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _register();
-    _autoLogin();
+    if (!debug) {
+      autoLogin();
+    }
   }
 
   // 自动登录
-  Future<void> _autoLogin() async {
+  Future<void> autoLogin() async {
     final prefs = await SharedPreferences.getInstance();
     final token = await prefs.getString('token');
     if (token != null) {
