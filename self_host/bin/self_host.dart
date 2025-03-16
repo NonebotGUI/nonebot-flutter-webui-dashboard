@@ -18,6 +18,16 @@ bool isReconnecting = false;
 StreamController<dynamic>? agentStreamController;
 
 void main() async {
+  Logger.rainbow('logo',
+      '  _   _                  ____        _    __        __   _     _   _ ___ ');
+  Logger.rainbow('logo',
+      ' | \\ | | ___  _ __   ___| __ )  ___ | |_  \\ \\      / /__| |__ | | | |_ _|');
+  Logger.rainbow('logo',
+      ' |  \\| |/ _ \\| \'_ \\ / _ \\  _ \\ / _ \\| __|  \\ \\ /\\ / / _ \\ \'_ \\| | | || | ');
+  Logger.rainbow('logo',
+      ' | |\\  | (_) | | | |  __/ |_) | (_) | |_    \\ V  V /  __/ |_) | |_| || | ');
+  Logger.rainbow('logo',
+      ' |_| \\_|\\___/|_| |_|\\___|____/ \\___/ \\__|    \\_/\\_/ \\___|_.__/ \\___/|___|');
   // 读取配置
   if (!File('config.json').existsSync()) {
     Map<String, dynamic> cfg = {
