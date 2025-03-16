@@ -12,8 +12,12 @@ void connectToWebSocket() {
     wsUrl = 'ws://localhost:2519/nbgui/v1/ws';
   } else {
     wsUrl = (Config.connectionMode == 1)
-        ? 'ws://${Config.wsHost}:${Config.wsPort}/nbgui/v1/ws'
-        : 'ws://${window.location.hostname}:${Uri.base.port}/app/protocol/ws';
+        ? (window.location.protocol == 'https:')
+            ? 'wss://${Config.wsHost}:${Config.wsPort}/nbgui/v1/ws'
+            : 'ws://${Config.wsHost}:${Config.wsPort}/nbgui/v1/ws'
+        : (window.location.protocol == 'https:')
+            ? 'wss://${window.location.hostname}:${Uri.base.port}/app/protocol/ws'
+            : 'ws://${window.location.hostname}:${Uri.base.port}/app/protocol/ws';
   }
   socket = WebSocket(wsUrl);
   // socket = WebSocket('ws://localhost:2519/nbgui/v1/ws');
