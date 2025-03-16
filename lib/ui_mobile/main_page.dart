@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:NoneBotWebUI/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:NoneBotWebUI/ui_mobile/main_pages/about.dart';
 import 'package:NoneBotWebUI/ui/main_pages/import_bot.dart';
@@ -677,15 +678,15 @@ class _HomeScreenState extends State<MainPageMobile> {
             ],
           ),
           AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 500),
               top: 20,
-              right: _visible ? 0 : -600,
+              right: _visible ? 0 : width * -0.65,
               child: Card(
                 child: Container(
                   padding: const EdgeInsets.all(14),
                   child: SizedBox(
-                    width: 450,
-                    height: 100,
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    height: MediaQuery.of(context).size.height * 0.2,
                     child: Column(
                       children: <Widget>[
                         Row(
@@ -712,9 +713,11 @@ class _HomeScreenState extends State<MainPageMobile> {
                         Row(
                           children: <Widget>[
                             Expanded(
-                              child: Text(
-                                hitokoto['hitokoto'],
-                              ),
+                              child: Text(hitokoto['hitokoto'],
+                                  style: TextStyle(
+                                      fontSize:
+                                          MediaQuery.of(context).size.height *
+                                              0.02)),
                             ),
                           ],
                         ),
@@ -724,6 +727,9 @@ class _HomeScreenState extends State<MainPageMobile> {
                           children: <Widget>[
                             Text(
                               '——${hitokoto['from']}',
+                              style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.height *
+                                      0.02),
                             ),
                           ],
                         )

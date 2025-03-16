@@ -1,4 +1,5 @@
 import 'dart:async';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'package:NoneBotWebUI/utils/global.dart';
 import 'package:NoneBotWebUI/utils/ws_handler.dart';
@@ -29,7 +30,7 @@ void connectToWebSocket() {
 
 void reconnect() {
   //循环重连
-  timer = Timer.periodic(Duration(milliseconds: 1500), (timer) {
+  timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
     if (Data.isConnected) {
       timer.cancel();
     } else {
