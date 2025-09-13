@@ -352,7 +352,7 @@ Future<void> check() async {
         Logger.rainbow('New version',
             '##                                                            ##');
         Logger.rainbow('New version',
-            '##       A new version of Nonebot Agent is available!         ##');
+            '##       A new version of Nonebot WebUI is available!         ##');
         Logger.rainbow('New version',
             '##                                                            ##');
         Logger.rainbow('New version',
