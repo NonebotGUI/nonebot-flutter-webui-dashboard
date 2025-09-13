@@ -680,7 +680,7 @@ class _HomeScreenState extends State<MainPageMobile> {
           AnimatedPositioned(
               duration: const Duration(milliseconds: 500),
               top: 20,
-              right: _visible ? 0 : width * -0.65,
+              right: _visible ? 0 : width * -0.8,
               child: Card(
                 child: Container(
                   padding: const EdgeInsets.all(14),
