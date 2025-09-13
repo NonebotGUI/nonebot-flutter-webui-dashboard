@@ -214,9 +214,19 @@ class _MyHomePageState extends State<PluginStoreMobile> {
                                                     style: ButtonStyle(
                                                       backgroundColor:
                                                           MaterialStateProperty
-                                                              .all(const Color
-                                                                  .fromRGBO(234,
-                                                                  82, 82, 1)),
+                                                              .all(
+                                                        Config.theme['color'] ==
+                                                                    'light' ||
+                                                                Config.theme[
+                                                                        'color'] ==
+                                                                    'default'
+                                                            ? const Color
+                                                                .fromRGBO(
+                                                                234, 82, 82, 1)
+                                                            : const Color
+                                                                .fromRGBO(147,
+                                                                112, 219, 1),
+                                                      ),
                                                       shape: MaterialStateProperty.all(
                                                           const RoundedRectangleBorder(
                                                               borderRadius: BorderRadius
