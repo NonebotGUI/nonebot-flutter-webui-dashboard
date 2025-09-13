@@ -41,6 +41,7 @@ dependencies:
   dart_jsonwebtoken: ^2.14.1
   shared_preferences: ^2.2.3
   provider: ^6.1.2
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:

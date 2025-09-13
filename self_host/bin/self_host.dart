@@ -11,12 +11,13 @@ import '../utils/global.dart';
 import '../utils/logger.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 WebSocket? socketToAgent;
 int wsStatus = 0;
 bool isReconnecting = false;
 StreamController<dynamic>? agentStreamController;
-
+var uuid = Uuid();
 void main() async {
   Logger.rainbow('logo',
       '  _   _                  ____        _    __        __   _     _   _ ___ ');
@@ -30,11 +31,14 @@ void main() async {
       ' |_| \\_|\\___/|_| |_|\\___|____/ \\___/ \\__|    \\_/\\_/ \\___|_.__/ \\___/|___|');
   // 读取配置
   if (!File('config.json').existsSync()) {
+    Logger.warn('Configuration file not found, creating a new one...');
+    Logger.info('Generating a random password for you...');
+    String password = uuid.v4().replaceAll('-', '').substring(0, 8);
     Map<String, dynamic> cfg = {
-      "host": "0.0.0.0",
+      "host": "127.0.0.1",
       "port": 8025,
-      "password": "123456",
-      "connection": {"host": "127.0.0.1", "port": 2519, "token": "123456"},
+      "password": password,
+      "connection": {"host": "127.0.0.1", "port": 2519, "token": ""},
       "connectionMode": 2,
       "checkUpdate": true,
       "theme": {
@@ -44,12 +48,14 @@ void main() async {
         "hitokoto": true
       }
     };
+    Logger.info('Your random password is: $password');
+    Logger.info('You can change it in the config.json file later.');
     String cfgStr = JsonEncoder.withIndent('  ').convert(cfg);
     File('config.json').writeAsStringSync(cfgStr);
   }
   String config = File('config.json').readAsStringSync();
   Map<String, dynamic> configJson = jsonDecode(config);
-  Config.token = configJson['password'];
+  Config.dashboradPassword = configJson['password'];
   Config.port = configJson['port'];
   Config.host = configJson['host'];
   Config.wsHost = configJson['connection']['host'];
@@ -74,7 +80,7 @@ void main() async {
     File('config.json')
         .writeAsStringSync(JsonEncoder.withIndent('  ').convert(configJson));
   }
-  if (Config.token.isEmpty) {
+  if (Config.dashboradPassword.isEmpty) {
     Logger.error('Please set the password in the configuration file.');
     Future.delayed(Duration(seconds: 5)).then((value) => exit(1));
   }
@@ -82,6 +88,11 @@ void main() async {
     Logger.info('Generating secret key...');
     String secret = generateSecretKey(64);
     File("secret.key").writeAsStringSync(secret);
+  }
+  if (Config.wsToken.isEmpty) {
+    Logger.error(
+        'WebSocket connection token is empty, please set it in the configuration file.');
+    Future.delayed(Duration(seconds: 5)).then((value) => exit(1));
   }
 
   // 设置 SIGINT 信号处理器
@@ -106,7 +117,7 @@ void main() async {
   router.post('/auth', (Request request) async {
     final payload = await request.readAsString();
     final data = jsonDecode(payload);
-    if (data['password'] == Config.token) {
+    if (data['password'] == Config.dashboradPassword) {
       String secret = File("secret.key").readAsStringSync();
       final now = DateTime.now();
       final formattedDate =

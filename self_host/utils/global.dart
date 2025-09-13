@@ -11,7 +11,7 @@ class Config {
   static late int port;
 
   /// 面板密码
-  static String token = '';
+  static String dashboradPassword = '';
 
   /// 监听主机地址
   static String host = '0.0.0.0';
