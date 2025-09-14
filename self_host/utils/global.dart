@@ -3,7 +3,7 @@ import 'dart:io';
 late WebSocket socketToAgent;
 late WebSocket socketToClient;
 int wsStatus = 0;
-String version = '0.1.10+1';
+String version = '0.1.11';
 
 /// 用户配置
 class Config {
