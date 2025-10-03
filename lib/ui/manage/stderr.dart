@@ -98,6 +98,9 @@ class _StderrPageState extends State<StderrPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('清除指令已发送')),
               );
+              setState(() {
+                Data.botStderr = '';
+              });
             },
           ),
         ],
