@@ -15,7 +15,6 @@ class _HomeScreenState extends State<importBot> {
   final pathController = TextEditingController();
   final protocolPathController = TextEditingController();
   final protocolCmdController = TextEditingController();
-  bool _withProtocol = false;
   String name = 'ImportBot';
   String path = '';
   String protocolPath = '';
@@ -102,135 +101,9 @@ class _HomeScreenState extends State<importBot> {
                                         },
                                       ),
                                       const SizedBox(height: 20),
-                                      Row(
-                                        children: <Widget>[
-                                          const Expanded(
-                                            child: Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                  '是否带有协议端',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                  textScaler:
-                                                      TextScaler.linear(1.1),
-                                                )),
-                                          ),
-                                          Expanded(
-                                            child: Align(
-                                              alignment: Alignment.centerRight,
-                                              child: Switch(
-                                                value: _withProtocol,
-                                                inactiveTrackColor: Colors.grey,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    _withProtocol = value;
-                                                  });
-                                                },
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      const SizedBox(height: 20),
-                                      Visibility(
-                                        visible: _withProtocol,
-                                        child: Column(
-                                          children: <Widget>[
-                                            const Text(
-                                              '填入协议端路径',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              textScaler:
-                                                  TextScaler.linear(1.1),
-                                              textAlign: TextAlign.left,
-                                            ),
-                                            const SizedBox(height: 16),
-                                            TextField(
-                                              controller: pathController,
-                                              decoration: const InputDecoration(
-                                                labelText: '路径',
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: Color.fromRGBO(
-                                                        234, 82, 82, 1),
-                                                    width: 5.0,
-                                                  ),
-                                                ),
-                                              ),
-                                              onChanged: (value) {
-                                                setState(
-                                                    () => protocolPath = value);
-                                              },
-                                            ),
-                                            const SizedBox(height: 20),
-                                            const Text(
-                                              '填入协议端启动命令',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              textScaler:
-                                                  TextScaler.linear(1.1),
-                                              textAlign: TextAlign.left,
-                                            ),
-                                            const SizedBox(height: 16),
-                                            TextField(
-                                              controller: pathController,
-                                              decoration: const InputDecoration(
-                                                labelText: '启动协议端命令',
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: Color.fromRGBO(
-                                                        234, 82, 82, 1),
-                                                    width: 5.0,
-                                                  ),
-                                                ),
-                                              ),
-                                              onChanged: (value) {
-                                                setState(
-                                                    () => protocolCmd = value);
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
                                     ],
                                   ),
                                 ),
-                                // Positioned(
-                                //     bottom: 8,
-                                //     right: 8,
-                                //     child: FloatingActionButton(
-                                //       backgroundColor:
-                                //           const Color.fromRGBO(234, 82, 82, 1),
-                                //       shape: const CircleBorder(),
-                                //       onPressed: () {
-                                //         Map res = {
-                                //           'name': name,
-                                //           'path': path,
-                                //           'withProtocol': _withProtocol,
-                                //           'protocolPath': protocolPath,
-                                //           'cmd': protocolCmd
-                                //         };
-                                //         String data = jsonEncode(res);
-                                //         socket.send('bot/import?data=$data?token=${Config.token}');
-                                //         setState(() {
-                                //           // 清空
-                                //           myController.clear();
-                                //           pathController.clear();
-                                //           _withProtocol = false;
-                                //           protocolPathController.clear();
-                                //           protocolCmdController.clear();
-                                //           name = 'ImportBot';
-                                //           path = '';
-                                //           protocolPath = '';
-                                //           protocolCmd = '';
-                                //         });
-                                //       },
-                                //       child: const Icon(Icons.done_rounded,
-                                //           color: Colors.white),
-                                //     ))
                               ],
                             ),
                           ),
@@ -250,18 +123,16 @@ class _HomeScreenState extends State<importBot> {
                                   Map res = {
                                     'name': name,
                                     'path': path,
-                                    'withProtocol': _withProtocol,
-                                    'protocolPath': protocolPath,
-                                    'cmd': protocolCmd
+                                    'withProtocol': false,
+                                    'protocolPath': 'none',
+                                    'cmd': 'none'
                                   };
                                   String data = jsonEncode(res);
                                   socket.send(
                                       'bot/import?data=$data?token=${Config.token}');
                                   setState(() {
-                                    // 清空
                                     myController.clear();
                                     pathController.clear();
-                                    _withProtocol = false;
                                     protocolPathController.clear();
                                     protocolCmdController.clear();
                                     name = 'ImportBot';
