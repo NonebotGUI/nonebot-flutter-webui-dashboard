@@ -85,6 +85,7 @@ class _HomeScreenState extends State<MainPageMobile> {
       if (gOnOpen.isNotEmpty) {
         socket.send("bot/log/$gOnOpen?token=${Config.token}");
         socket.send("botInfo/$gOnOpen?token=${Config.token}");
+        socket.send("bot/stderr/$gOnOpen?token=${Config.token}");
         setState(() {});
       }
     });
