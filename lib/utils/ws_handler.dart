@@ -67,6 +67,19 @@ Future<void> wsHandler(MessageEvent msg) async {
           Data.botLog = msgJson['data'];
         } else {}
         break;
+      // Bot错误日志
+      case 'botStderr':
+        Data.isConnected = true;
+        if (msgJson['hasLog']) {
+          if (msgJson['data'] is String) {
+            Data.hasStderr = true;
+            Data.botStderr = msgJson['data'];
+          } else {
+            Data.hasStderr = false;
+            Data.botStderr = '';
+          }
+        }
+        break;
       default:
         break;
     }

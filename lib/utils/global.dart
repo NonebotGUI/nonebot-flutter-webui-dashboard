@@ -64,6 +64,12 @@ class Data {
   ///Bot日志
   static String botLog = '';
 
+  ///Bot错误日志
+  static String botStderr = '';
+
+  ///是否有错误日志
+  static bool hasStderr = false;
+
   ///版本信息
   static Map agentVersion = {
     "version": "Unknown",

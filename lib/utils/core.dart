@@ -11,6 +11,7 @@ void connectToWebSocket() {
   late String wsUrl;
   if (debug) {
     wsUrl = 'ws://localhost:2519/nbgui/v1/ws';
+    Config.token = '1823dbcd';
   } else {
     wsUrl = (Config.connectionMode == 1)
         ? (window.location.protocol == 'https:')
