@@ -13,7 +13,7 @@ import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  version = '0.1.12';
+  version = '0.1.12+1';
   debug = false;
 
   String initialThemeMode = 'light';
@@ -305,7 +305,7 @@ class _LoginPageState extends State<LoginPage> {
               child: ElevatedButton(
                 onPressed: () async {
                   if (debug) {
-                    Config.token = '114514';
+                    Config.token = '1823dbcd';
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
