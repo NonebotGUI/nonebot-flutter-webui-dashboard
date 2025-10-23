@@ -104,7 +104,9 @@ void main() async {
   });
 
   // 连接Agent端
-  await connectToWs();
+  if (Config.connectionMode == 2) {
+    await connectToWs();
+  }
 
   var router = Router();
   var staticHandler = createStaticHandler('web', defaultDocument: 'index.html');
