@@ -334,7 +334,7 @@ class _MyCustomFormState extends State<CreateBot> {
               "adapters": buildSelectedAdapterOptions(),
             };
             String dataJson = jsonEncode(data);
-            socket.send('bot/create?data=$dataJson?token=${Config.token}');
+            socket.send('bot/create?data=$dataJson&token=${Config.token}');
             showDialog(
               context: context,
               barrierDismissible: false,

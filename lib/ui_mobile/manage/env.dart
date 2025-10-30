@@ -237,7 +237,7 @@ class _HomeScreenState extends State<EditEnv> {
                                                           .join('\n'),
                                                     };
                                                     socket.send(
-                                                        'env/edit?data=${jsonEncode(data)}?token=${Config.token}');
+                                                        'env/edit?data=${jsonEncode(data)}&token=${Config.token}');
                                                     Navigator.of(context).pop();
                                                     _loadEnv();
                                                   },
@@ -260,7 +260,7 @@ class _HomeScreenState extends State<EditEnv> {
                                           "content": _envContent.join('\n'),
                                         };
                                         socket.send(
-                                            'env/edit?data=${jsonEncode(data)}?token=${Config.token}');
+                                            'env/edit?data=${jsonEncode(data)}&token=${Config.token}');
                                         _loadEnv();
                                       },
                                     ),
@@ -340,7 +340,7 @@ class _HomeScreenState extends State<EditEnv> {
                             "content": _envContent.join('\n'),
                           };
                           socket.send(
-                              'env/edit?data=${jsonEncode(data)}?token=${Config.token}');
+                              'env/edit?data=${jsonEncode(data)}&token=${Config.token}');
                           _loadEnv();
                           Navigator.of(context).pop();
                         },
@@ -405,7 +405,7 @@ class _HomeScreenState extends State<EditEnv> {
                             "content": _envContent.join('\n'),
                           };
                           socket.send(
-                              'env/edit?data=${jsonEncode(data)}?token=${Config.token}');
+                              'env/edit?data=${jsonEncode(data)}&token=${Config.token}');
                           _loadEnv();
                           Navigator.of(context).pop();
                         },
@@ -427,6 +427,6 @@ class _HomeScreenState extends State<EditEnv> {
   }
 
   _loadEnv() {
-    socket.send('env/load/$gOnOpen/$envFile?token=${Config.token}');
+    socket.send('env/load/$gOnOpen/$envFile&token=${Config.token}');
   }
 }

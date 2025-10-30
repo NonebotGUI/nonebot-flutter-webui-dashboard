@@ -68,10 +68,10 @@ class _HomeScreenState extends State<MainPage> {
   //每过1.5秒获取一次
   getSystemStatus() async {
     timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
-      socket.send('ping?token=${Config.token}');
-      socket.send('system?token=${Config.token}');
-      socket.send('platform?token=${Config.token}');
-      socket.send('botList?token=${Config.token}');
+      socket.send('ping&token=${Config.token}');
+      socket.send('system&token=${Config.token}');
+      socket.send('platform&token=${Config.token}');
+      socket.send('botList&token=${Config.token}');
       runningCount =
           Data.botList.where((bot) => bot['isRunning'] == true).length;
       // 拿到状态后刷新页面
@@ -82,9 +82,9 @@ class _HomeScreenState extends State<MainPage> {
   getBotLog() async {
     timer = Timer.periodic(const Duration(milliseconds: 1500), (timer2) async {
       if (gOnOpen.isNotEmpty) {
-        socket.send("bot/log/$gOnOpen?token=${Config.token}");
-        socket.send("botInfo/$gOnOpen?token=${Config.token}");
-        socket.send("bot/stderr/$gOnOpen?token=${Config.token}");
+        socket.send("bot/log/$gOnOpen&token=${Config.token}");
+        socket.send("botInfo/$gOnOpen&token=${Config.token}");
+        socket.send("bot/stderr/$gOnOpen&token=${Config.token}");
         setState(() {});
       }
     });
@@ -199,7 +199,7 @@ class _HomeScreenState extends State<MainPage> {
                         break;
                     }
                     if (_selectedIndex == 1) {
-                      socket.send("botInfo/$gOnOpen?token=${Config.token}");
+                      socket.send("botInfo/$gOnOpen&token=${Config.token}");
                     }
                   });
                 },
@@ -533,7 +533,7 @@ class _HomeScreenState extends State<MainPage> {
                                         return InkWell(
                                             onTap: () {
                                               socket.send(
-                                                  "botInfo/${Data.botList[index]['id']}?token=${Config.token}");
+                                                  "botInfo/${Data.botList[index]['id']}&token=${Config.token}");
                                               gOnOpen =
                                                   Data.botList[index]['id'];
                                               setState(() {
@@ -592,7 +592,7 @@ class _HomeScreenState extends State<MainPage> {
                                                                 tooltip: '停止',
                                                                 onPressed: () {
                                                                   socket.send(
-                                                                      'bot/stop/${Data.botList[index]['id']}?token=${Config.token}');
+                                                                      'bot/stop/${Data.botList[index]['id']}&token=${Config.token}');
                                                                 }),
                                                           )
                                                         : Center(
@@ -603,7 +603,7 @@ class _HomeScreenState extends State<MainPage> {
                                                                 tooltip: '启动',
                                                                 onPressed: () {
                                                                   socket.send(
-                                                                      'bot/run/${Data.botList[index]['id']}?token=${Config.token}');
+                                                                      'bot/run/${Data.botList[index]['id']}&token=${Config.token}');
                                                                 }),
                                                           )),
                                               ],

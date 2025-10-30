@@ -34,7 +34,7 @@ class _MoreState extends State<About> {
   @override
   void initState() {
     super.initState();
-    socket.send('version?token=${Config.token}');
+    socket.send('version&token=${Config.token}');
     Future.delayed(const Duration(milliseconds: 850), () {
       setState(() {});
     });

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:NoneBotWebUI/ui/manage/files.dart';
 import 'package:NoneBotWebUI/ui/manage/stderr.dart';
 import 'package:flutter/material.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
@@ -170,7 +171,7 @@ class _HomeScreenState extends State<ManageBot> {
                                             };
                                             String res = jsonEncode(data);
                                             socket.send(
-                                                'bot/rename?data=$res?token=${Config.token}');
+                                                'bot/rename?data=$res&token=${Config.token}');
                                             Navigator.of(context).pop();
                                           }
                                         },
@@ -203,7 +204,7 @@ class _HomeScreenState extends State<ManageBot> {
                                       TextButton(
                                         onPressed: () {
                                           socket.send(
-                                              'bot/delete/${Data.botInfo['id']}?token=${Config.token}');
+                                              'bot/delete/${Data.botInfo['id']}&token=${Config.token}');
                                           gOnOpen = '';
                                           Navigator.of(context).pop();
                                         },
@@ -215,7 +216,7 @@ class _HomeScreenState extends State<ManageBot> {
                                       TextButton(
                                         onPressed: () {
                                           socket.send(
-                                              'bot/remove/${Data.botInfo['id']}?token=${Config.token}');
+                                              'bot/remove/${Data.botInfo['id']}&token=${Config.token}');
                                           gOnOpen = '';
                                           Navigator.of(context).pop();
                                         },
@@ -347,7 +348,7 @@ class _HomeScreenState extends State<ManageBot> {
                                                   ),
                                                 )
                                               : socket.send(
-                                                  'bot/run/${Data.botInfo['id']}?token=${Config.token}');
+                                                  'bot/run/${Data.botInfo['id']}&token=${Config.token}');
                                         },
                                         tooltip: "启动",
                                         iconSize: height * 0.03,
@@ -357,7 +358,7 @@ class _HomeScreenState extends State<ManageBot> {
                                         onPressed: () {
                                           Data.botInfo['isRunning']
                                               ? socket.send(
-                                                  'bot/stop/${Data.botInfo['id']}?token=${Config.token}')
+                                                  'bot/stop/${Data.botInfo['id']}&token=${Config.token}')
                                               : ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                   const SnackBar(
@@ -373,7 +374,7 @@ class _HomeScreenState extends State<ManageBot> {
                                         onPressed: () {
                                           Data.botInfo['isRunning']
                                               ? socket.send(
-                                                  'bot/restart/${Data.botInfo['id']}?token=${Config.token}')
+                                                  'bot/restart/${Data.botInfo['id']}&token=${Config.token}')
                                               : ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                   const SnackBar(
@@ -409,6 +410,18 @@ class _HomeScreenState extends State<ManageBot> {
                                                       const StderrPage()));
                                         },
                                       ),
+                                      IconButton(
+                                        icon: const Icon(Icons.folder_rounded),
+                                        tooltip: "文件管理",
+                                        iconSize: height * 0.03,
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const Files()));
+                                        },
+                                      )
                                     ],
                                   ),
                                 )

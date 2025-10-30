@@ -165,7 +165,7 @@ class _MyHomePageState extends State<DriverStoreMobile> {
                                                       String dataStr =
                                                           jsonEncode(data);
                                                       socket.send(
-                                                          'driver/install?data=$dataStr?token=${Config.token}');
+                                                          'driver/install?data=$dataStr&token=${Config.token}');
                                                       showDialog(
                                                         context: context,
                                                         builder: (BuildContext
@@ -281,7 +281,7 @@ class _MyHomePageState extends State<DriverStoreMobile> {
                                       };
                                       String dataStr = jsonEncode(data);
                                       socket.send(
-                                          'driver/install?data=$dataStr?token=${Config.token}');
+                                          'driver/install?data=$dataStr&token=${Config.token}');
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {

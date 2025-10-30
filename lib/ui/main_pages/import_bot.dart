@@ -129,7 +129,7 @@ class _HomeScreenState extends State<importBot> {
                                   };
                                   String data = jsonEncode(res);
                                   socket.send(
-                                      'bot/import?data=$data?token=${Config.token}');
+                                      'bot/import?data=$data&token=${Config.token}');
                                   setState(() {
                                     myController.clear();
                                     pathController.clear();

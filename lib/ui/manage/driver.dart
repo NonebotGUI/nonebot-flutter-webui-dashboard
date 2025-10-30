@@ -158,7 +158,7 @@ class _MyHomePageState extends State<DriverStore> {
                                       };
                                       String dataStr = jsonEncode(data);
                                       socket.send(
-                                          'driver/install?data=$dataStr?token=${Config.token}');
+                                          'driver/install?data=$dataStr&token=${Config.token}');
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {

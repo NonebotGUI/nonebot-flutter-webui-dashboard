@@ -165,7 +165,7 @@ class _MyHomePageState extends State<PluginStoreMobile> {
                                                       String dataStr =
                                                           jsonEncode(data);
                                                       socket.send(
-                                                          'plugin/install?data=$dataStr?token=${Config.token}');
+                                                          'plugin/install?data=$dataStr&token=${Config.token}');
                                                       showDialog(
                                                         context: context,
                                                         builder: (BuildContext
@@ -303,7 +303,7 @@ class _MyHomePageState extends State<PluginStoreMobile> {
                                       };
                                       String dataStr = jsonEncode(data);
                                       socket.send(
-                                          'plugin/install?data=$dataStr?token=${Config.token}');
+                                          'plugin/install?data=$dataStr&token=${Config.token}');
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {

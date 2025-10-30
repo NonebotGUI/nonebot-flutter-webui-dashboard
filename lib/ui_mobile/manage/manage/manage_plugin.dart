@@ -49,9 +49,9 @@ class _HomeScreenState extends State<ManagePlugin> {
       if (mounted) {
         setState(() {
           socket
-              .send('plugin/list/${Data.botInfo['id']}?token=${Config.token}');
+              .send('plugin/list/${Data.botInfo['id']}&token=${Config.token}');
           socket.send(
-              'plugin/disabledList/${Data.botInfo['id']}?token=${Config.token}');
+              'plugin/disabledList/${Data.botInfo['id']}&token=${Config.token}');
         });
       }
     });
@@ -116,7 +116,7 @@ class _HomeScreenState extends State<ManagePlugin> {
                                       String dataStr = jsonEncode(data);
                                       setState(() {
                                         socket.send(
-                                            'plugin/disable?data=$dataStr?token=${Config.token}');
+                                            'plugin/disable?data=$dataStr&token=${Config.token}');
                                       });
                                     },
                                   ),
@@ -196,7 +196,7 @@ class _HomeScreenState extends State<ManagePlugin> {
                                       String dataStr = jsonEncode(data);
                                       setState(() {
                                         socket.send(
-                                            'plugin/enable?data=$dataStr?token=${Config.token}');
+                                            'plugin/enable?data=$dataStr&token=${Config.token}');
                                       });
                                     },
                                   ),
@@ -234,5 +234,5 @@ void _uninstall(name) async {
     'id': Data.botInfo['id'],
   };
   String dataStr = jsonEncode(data);
-  socket.send('plugin/uninstall?data=$dataStr?token=${Config.token}');
+  socket.send('plugin/uninstall?data=$dataStr&token=${Config.token}');
 }

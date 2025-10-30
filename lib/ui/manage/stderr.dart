@@ -57,7 +57,7 @@ class _StderrPageState extends State<StderrPage> {
 
   void _clearStderr() {
     if (gOnOpen.isNotEmpty) {
-      socket.send("bot/clearStderr/$gOnOpen?token=${Config.token}");
+      socket.send("bot/clearStderr/$gOnOpen&token=${Config.token}");
     }
   }
 
