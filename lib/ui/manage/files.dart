@@ -446,17 +446,22 @@ class _HomeScreenState extends State<Files> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                  flex: 1,
+                  flex: 2,
                   child: Container(
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '当前路径: ${Data.currentPath}',
-                          style: const TextStyle(
-                              fontSize: 16.0, fontWeight: FontWeight.bold),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Text(
+                            '当前路径: ${Data.currentPath}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                          ),
                         ),
                         const SizedBox(height: 4.0),
                         Row(
@@ -609,7 +614,7 @@ class _HomeScreenState extends State<Files> {
                     ),
                   )),
               Expanded(
-                  flex: 9,
+                  flex: 15,
                   child: ListView.builder(
                     itemCount: Data.fileList.length,
                     itemBuilder: (context, index) {
