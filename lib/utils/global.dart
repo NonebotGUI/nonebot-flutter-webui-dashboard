@@ -27,7 +27,7 @@ class Config {
 
   /// 主题
   static Map theme = {
-    "color": "default",
+    "color": "light",
     "img": "default",
     "text": "default",
   };
@@ -79,6 +79,15 @@ class Data {
 
   /// 安装Bot时的日志
   static List installBotLog = [];
+
+  /// 文件列表
+  static List fileList = [];
+
+  /// 当前处于的子路径
+  static String currentPath = '/';
+
+  /// 文件内容（仅支持文本类文件）
+  static String fileContent = '';
 }
 
 // 神秘开关
