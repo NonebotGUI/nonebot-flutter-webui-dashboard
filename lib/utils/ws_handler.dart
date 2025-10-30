@@ -80,6 +80,22 @@ Future<void> wsHandler(MessageEvent msg) async {
           }
         }
         break;
+      // 文件列表
+      case 'fileList':
+        Data.isConnected = true;
+        if (msgJson['data'] is List) {
+          Data.fileList = msgJson['data'];
+        } else {}
+        break;
+
+      // 文件内容
+      case 'fileContent':
+        Data.isConnected = true;
+        if (msgJson['data'] is String) {
+          Data.fileContent = msgJson['data'];
+        } else {}
+        break;
+
       default:
         break;
     }
