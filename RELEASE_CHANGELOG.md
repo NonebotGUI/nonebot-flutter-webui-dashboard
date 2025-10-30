@@ -1,3 +1,4 @@
-# 🌈 Changelog 2025.10.23 🌈
+# 🌈 Changelog 2025.10.30 🌈
 by @XTxiaoting14332
-修正连接模式的bug
+新增文件管理
+更改ws消息格式
