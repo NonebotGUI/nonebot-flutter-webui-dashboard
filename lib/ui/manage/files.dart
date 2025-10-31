@@ -591,21 +591,20 @@ class _HomeScreenState extends State<Files> {
                                             }
                                           },
                                         ),
-                                        TextButton(
-                                          child: const Text(
-                                            "刷新",
-                                            style:
-                                                TextStyle(color: Colors.blue),
-                                          ),
-                                          onPressed: () {
-                                            socket.send(
-                                                "file/list/$gOnOpen${Data.currentPath}&token=${Config.token}");
-                                          },
-                                        )
                                       ],
                                     );
                                   },
                                 );
+                              },
+                            ),
+                            TextButton(
+                              child: const Text(
+                                "刷新",
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                              onPressed: () {
+                                socket.send(
+                                    "file/list/$gOnOpen${Data.currentPath}&token=${Config.token}");
                               },
                             )
                           ],
