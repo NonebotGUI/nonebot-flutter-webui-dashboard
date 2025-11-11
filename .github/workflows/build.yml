@@ -220,7 +220,7 @@ jobs:
           uses: flutter-actions/setup-flutter@v4
           with:
             channel: stable
-            version: 3.22.1
+            version: latest
 
         - name: Install dependencies
           run: flutter pub get
@@ -274,7 +274,7 @@ jobs:
         uses: flutter-actions/setup-flutter@v4
         with:
           channel: stable
-          version: 3.22.1
+          version: latest
 
       - name: Install dependencies
         run: flutter pub get
