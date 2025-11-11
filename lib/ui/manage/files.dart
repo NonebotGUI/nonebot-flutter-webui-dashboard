@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
 import 'dart:convert';
+import 'package:marquee/marquee.dart';
+import 'dart:html' as html; // 导入 dart:html 用于 Web 下载
+import 'package:http/http.dart' as http; // 导入 http 库
 
 class Files extends StatefulWidget {
   const Files({super.key});
@@ -273,6 +276,115 @@ class _HomeScreenState extends State<Files> {
         );
       },
     );
+  }
+
+  void _handleUpload() {
+    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+    uploadInput.accept = '*/*';
+    uploadInput.click();
+    uploadInput.onChange.listen((e) {
+      if (uploadInput.files!.isEmpty) return;
+
+      final file = uploadInput.files!.first;
+      final reader = html.FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onLoadEnd.listen((e) async {
+        if (reader.readyState == html.FileReader.DONE) {
+          final bytes = reader.result as List<int>;
+          final fileName = file.name;
+          final uploadHost = 'http://${Config.wsHost}:${Config.wsPort}';
+          final path = Uri.encodeComponent(Data.currentPath);
+          final encodedFileName = Uri.encodeComponent(fileName);
+          final url = Uri.parse(
+              '$uploadHost/nbgui/v1/file/upload/?id=$gOnOpen&path=$path&filename=$encodedFileName');
+
+          try {
+            final response = await http.post(
+              url,
+              headers: {
+                'Authorization': 'Bearer ${Config.token}',
+                'Content-Type': 'application/octet-stream',
+              },
+              body: bytes,
+            );
+
+            if (response.statusCode == 200 || response.statusCode == 201) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('文件 "$fileName" 上传成功'),
+                ),
+              );
+              socket.send(
+                  "file/list/$gOnOpen${Data.currentPath}&token=${Config.token}");
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      '上传失败: ${response.statusCode} ${response.reasonPhrase}'),
+                ),
+              );
+            }
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('上传出错: $e'),
+              ),
+            );
+          }
+        }
+      });
+    });
+  }
+
+  void _handleHttpDownload(int index) async {
+    final file = Data.fileList[index];
+    if (file['type'] == 'directory') return;
+
+    final fileName = file['name'];
+    String filePath = Data.currentPath;
+    if (filePath == '/') {
+      filePath = fileName;
+    } else {
+      filePath += '/$fileName';
+    }
+    if (filePath.startsWith('/')) {
+      filePath = filePath.substring(1);
+    }
+    final downloadHost = 'http://${Config.wsHost}:${Config.wsPort}';
+    final url =
+        Uri.parse('$downloadHost/nbgui/v1/file/download/$gOnOpen/$filePath');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer ${Config.token}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+        final blob = html.Blob([bytes]);
+        final blobUrl = html.Url.createObjectUrlFromBlob(blob);
+        final anchor = html.AnchorElement(href: blobUrl)
+          ..setAttribute("download", fileName)
+          ..click();
+        html.Url.revokeObjectUrl(blobUrl);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('下载失败: ${response.statusCode} ${response.reasonPhrase}'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('下载出错: $e'),
+        ),
+      );
+    }
   }
 
   void _prepareSingleItemPaste(int index, {required bool isMove}) {
@@ -597,6 +709,14 @@ class _HomeScreenState extends State<Files> {
                                 );
                               },
                             ),
+                            if (Config.connectionMode == 1)
+                              TextButton(
+                                onPressed: _handleUpload,
+                                child: const Text(
+                                  "上传文件",
+                                  style: TextStyle(color: Colors.blue),
+                                ),
+                              ),
                             TextButton(
                               child: const Text(
                                 "刷新",
@@ -620,7 +740,42 @@ class _HomeScreenState extends State<Files> {
                       var file = Data.fileList[index];
                       final bool isSelected = _selectedIndices.contains(index);
                       return ListTile(
-                        title: Text(file['name']),
+                        title: LayoutBuilder(
+                          builder: (BuildContext context,
+                              BoxConstraints constraints) {
+                            const style =
+                                TextStyle(fontWeight: FontWeight.w500);
+                            final text = file['name'];
+                            final textPainter = TextPainter(
+                              text: TextSpan(text: text, style: style),
+                              maxLines: 1,
+                              textDirection: TextDirection.ltr,
+                            )..layout(minWidth: 0, maxWidth: double.infinity);
+                            if (textPainter.width < constraints.maxWidth) {
+                              return Text(text, style: style);
+                            } else {
+                              return SizedBox(
+                                height: 20.0,
+                                child: Marquee(
+                                  text: text,
+                                  style: style,
+                                  scrollAxis: Axis.horizontal,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  blankSpace: 20.0,
+                                  velocity: 50.0,
+                                  pauseAfterRound: const Duration(seconds: 1),
+                                  startPadding: 10.0,
+                                  accelerationDuration:
+                                      const Duration(seconds: 1),
+                                  accelerationCurve: Curves.linear,
+                                  decelerationDuration:
+                                      const Duration(milliseconds: 500),
+                                  decelerationCurve: Curves.easeOut,
+                                ),
+                              );
+                            }
+                          },
+                        ),
                         leading: (file['type'] == 'directory')
                             ? const Icon(Icons.folder)
                             : const Icon(Icons.insert_drive_file),
@@ -634,6 +789,14 @@ class _HomeScreenState extends State<Files> {
                             : Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
+                                  if (file['type'] != 'directory' &&
+                                      Config.connectionMode == 1)
+                                    IconButton(
+                                      icon: const Icon(Icons.download),
+                                      tooltip: '下载',
+                                      onPressed: () =>
+                                          _handleHttpDownload(index),
+                                    ),
                                   IconButton(
                                     icon: const Icon(
                                         Icons.drive_file_rename_outline),
