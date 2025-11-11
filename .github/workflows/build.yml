@@ -347,11 +347,11 @@ jobs:
           name: "dashboard-macos-M1"
           path: dist/
 
-      - name: Download Dashboard Artifact (html)
-        uses: actions/download-artifact@v4
-        with:
-          name: "dashboard-index-html"
-          path: dist/
+      # - name: Download Dashboard Artifact (html)
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: "dashboard-index-html"
+      #     path: dist/
 
       - name: Download Dashboard Artifact (canvaskit)
         uses: actions/download-artifact@v4
@@ -373,7 +373,6 @@ jobs:
             dist/dashboard-linux-amd64
             dist/dashboard-linux-arm64
             dist/dashboard-linux-arm
-            dist/dashboard-index-html.zip
             dist/dashboard-index-canvaskit.zip
             dist/dashboard-macos
             dist/dashboard-macos-M1
