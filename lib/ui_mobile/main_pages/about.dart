@@ -133,7 +133,7 @@ class _MoreState extends State<About> {
               onPressed: () {
                 Clipboard.setData(const ClipboardData(
                     text:
-                        'https://github.com/NoneBotWebUI/nonebot-flutter-gui'));
+                        'https://github.com/NoneBotWebUI/nonebot-flutter-webui-dashboard'));
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text('项目仓库链接已复制到剪贴板'),
                   duration: Duration(seconds: 3),
@@ -146,7 +146,7 @@ class _MoreState extends State<About> {
             IconButton(
               onPressed: () {
                 Clipboard.setData(
-                    const ClipboardData(text: 'https://doc.nbgui.top'));
+                    const ClipboardData(text: 'https://webui.nbgui.top'));
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text('已复制到剪贴板'),
                   duration: Duration(seconds: 3),
