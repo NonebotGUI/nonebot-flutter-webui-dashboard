@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:NoneBotWebUI/assets/my_flutter_app_icons.dart';
 import 'package:NoneBotWebUI/utils/global.dart';
+import 'dart:ui_web' as ui;
+import 'dart:html' as html;
 
 class About extends StatefulWidget {
   const About({super.key});
@@ -43,6 +45,85 @@ class _MoreState extends State<About> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  final List<Map<String, String>> _acknowledgements = [
+    {
+      'avatar': 'http://q1.qlogo.cn/g?b=qq&nk=2125714976&s=100',
+      'name': '【夜风】NightWind',
+      'contribution': '项目主要维护者',
+    },
+    {
+      'avatar': 'http://q1.qlogo.cn/g?b=qq&nk=1651930562&s=100',
+      'name': 'xuebi',
+      'contribution': 'WebUI Docker 镜像维护者',
+    },
+    {
+      'avatar': 'http://q1.qlogo.cn/g?b=qq&nk=2740324073&s=100',
+      'name': 'Komorebi',
+      'contribution': '项目Readme格式贡献者',
+    },
+    {
+      'avatar': 'http://q1.qlogo.cn/g?b=qq&nk=1113956005&s=100',
+      'name': 'concy',
+      'contribution': '早期测试与反馈',
+    },
+  ];
+
+  void _showAcknowledgementsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('鸣谢'),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 300,
+            child: ListView.builder(
+              itemCount: _acknowledgements.length,
+              itemBuilder: (context, index) {
+                final person = _acknowledgements[index];
+                final imageUrl = person['avatar']!;
+                final String viewType = 'html-image-$imageUrl-$index';
+                ui.platformViewRegistry.registerViewFactory(
+                  viewType,
+                  (int viewId) {
+                    final html.ImageElement imageElement = html.ImageElement()
+                      ..src = imageUrl
+                      ..style.width = '100%'
+                      ..style.height = '100%'
+                      ..style.objectFit = 'cover';
+                    return imageElement;
+                  },
+                );
+
+                return ListTile(
+                  leading: SizedBox(
+                    width: 40.0,
+                    height: 40.0,
+                    child: ClipOval(
+                      child: HtmlElementView(
+                        viewType: viewType,
+                      ),
+                    ),
+                  ),
+                  title: Text(person['name']!),
+                  subtitle: Text(person['contribution']!),
+                );
+              },
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('关闭'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -154,6 +235,13 @@ class _MoreState extends State<About> {
               },
               icon: const Icon(Icons.book_rounded),
               tooltip: '文档地址',
+              iconSize: 30,
+            ),
+            // 新增的鸣谢按钮
+            IconButton(
+              onPressed: _showAcknowledgementsDialog,
+              icon: const Icon(Icons.people_alt_rounded),
+              tooltip: '鸣谢',
               iconSize: 30,
             ),
           ],
