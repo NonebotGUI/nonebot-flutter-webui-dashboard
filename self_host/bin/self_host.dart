@@ -45,7 +45,7 @@ void main() async {
         "color": "light",
         "img": "default",
         "text": "default",
-        "hitokoto": true
+        "hitokoto": false
       }
     };
     Logger.info('Your random password is: $password');
