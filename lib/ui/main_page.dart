@@ -36,14 +36,14 @@ class _HomeScreenState extends State<MainPage> {
   void initState() {
     super.initState();
     connectToWebSocket();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showHitokoto();
-    });
     setState(() {
       getSystemStatus();
       getBotLog();
     });
     if (Config.hitokoto) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showHitokoto();
+      });
       getHitokoto();
     }
   }

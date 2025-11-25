@@ -41,10 +41,11 @@ class _HomeScreenState extends State<MainPageMobile> {
       getSystemStatus();
       getBotLog();
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showHitokoto();
-    });
+
     if (Config.hitokoto) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showHitokoto();
+      });
       getHitokoto();
     }
   }
