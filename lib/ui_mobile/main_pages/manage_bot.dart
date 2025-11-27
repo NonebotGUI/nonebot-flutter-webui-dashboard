@@ -488,6 +488,36 @@ class _BotInfoDialogState extends State<BotInfoDialog> {
                       _item('路径', Data.botInfo['path']),
                       _item('PID', Data.botInfo['pid'].toString()),
                       _item('状态', Data.botInfo['isRunning'] ? '运行中' : '未运行'),
+                      const SizedBox(height: 10),
+                      const Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "自启动",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Switch(
+                            inactiveTrackColor: Colors.grey,
+                            value: Data.botInfo['autoStart'] ?? false,
+                            onChanged: (value) {
+                              socket.send(
+                                  'bot/toggleAutoStart/${Data.botInfo['id']}&token=${Config.token}');
+                              setState(() {
+                                Data.botInfo['autoStart'] = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -603,7 +633,10 @@ class _BotInfoDialogState extends State<BotInfoDialog> {
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all(
-                              const Color.fromRGBO(234, 82, 82, 1)),
+                              Config.theme['color'] == 'light' ||
+                                      Config.theme['color'] == 'default'
+                                  ? const Color.fromRGBO(234, 82, 82, 1)
+                                  : const Color.fromRGBO(147, 112, 219, 1)),
                           shape: MaterialStateProperty.all(
                               const RoundedRectangleBorder(
                                   borderRadius:

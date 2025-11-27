@@ -58,7 +58,8 @@ class Data {
     "path": "Unknown",
     "time": "Unknown",
     "isRunning": false,
-    "pid": Null
+    "pid": Null,
+    "autoStart": false
   };
 
   ///Bot日志

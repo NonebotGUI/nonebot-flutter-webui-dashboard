@@ -134,6 +134,37 @@ class _HomeScreenState extends State<ManageBot> {
                                     ),
                             ),
                           ),
+                          const SizedBox(height: 10),
+                          const Padding(
+                            padding: EdgeInsets.all(4),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                "自启动",
+                                textScaler: TextScaler.linear(1.4),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Switch(
+                                inactiveTrackColor: Colors.grey,
+                                value: Data.botInfo['autoStart'] ?? false,
+                                onChanged: (value) {
+                                  socket.send(
+                                      'bot/toggleAutoStart/${Data.botInfo['id']}&token=${Config.token}');
+                                  setState(() {
+                                    Data.botInfo['autoStart'] = value;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
                         ],
                       )),
                       const SizedBox(height: 24),
