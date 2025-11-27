@@ -13,7 +13,7 @@ import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  version = '0.1.16';
+  version = '0.1.17';
   debug = false;
 
   String initialThemeMode = 'light';
