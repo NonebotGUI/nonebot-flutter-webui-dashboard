@@ -13,10 +13,13 @@ import 'package:flutter/services.dart' show rootBundle;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  version = '0.1.17';
+  version = '0.1.18';
   debug = false;
 
   String initialThemeMode = 'light';
+
+  final prefs = await SharedPreferences.getInstance();
+  final String? savedThemeColor = prefs.getString('theme_color');
 
   if (!debug) {
     final themeResponse = await http.get(Uri.parse('/theme'));
@@ -24,8 +27,19 @@ void main() async {
       final themeData = jsonDecode(themeResponse.body);
       Config.theme = themeData;
       Config.hitokoto = themeData['hitokoto'];
-      initialThemeMode = themeData['color'] ?? 'light';
+      // 优先使用本地存储的主题，如果没有则使用服务器返回的主题
+      initialThemeMode = savedThemeColor ?? (themeData['color'] ?? 'light');
+    } else {
+      initialThemeMode = savedThemeColor ?? 'light';
     }
+  } else {
+    initialThemeMode = savedThemeColor ?? 'light';
+  }
+
+  if (Config.theme != null) {
+    Config.theme['color'] = initialThemeMode;
+  } else {
+    Config.theme = {'color': initialThemeMode};
   }
 
   runApp(
@@ -46,13 +60,18 @@ class ThemeNotifier extends ChangeNotifier {
 
   ThemeData get themeData => _themeData;
 
-  void toggleTheme() {
+  void toggleTheme() async {
+    final prefs = await SharedPreferences.getInstance();
     if (_themeMode == 'light') {
       _themeMode = 'dark';
       _themeData = _getTheme('dark');
+      Config.theme['color'] = 'dark';
+      await prefs.setString('theme_color', 'dark');
     } else {
       _themeMode = 'light';
       _themeData = _getTheme('light');
+      Config.theme['color'] = 'light';
+      await prefs.setString('theme_color', 'light');
     }
     notifyListeners();
   }
@@ -175,6 +194,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> autoLogin() async {
     final prefs = await SharedPreferences.getInstance();
     final token = await prefs.getString('token');
+    // 获取颜色主题
     if (token != null) {
       final res = await http.get(Uri.parse("/config"),
           headers: {"Authorization": 'Bearer $token'});
@@ -185,6 +205,11 @@ class _LoginPageState extends State<LoginPage> {
         Config.wsPort = connection['port'];
         Config.token = connection['token'];
         Config.connectionMode = config['connectionMode'];
+        String currentTheme = Config.theme['color'] ?? 'light';
+        if (!prefs.containsKey('theme_color')) {
+          await prefs.setString('theme_color', currentTheme);
+        }
+
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -204,7 +229,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 获取屏幕的尺寸
     dynamic screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
     double screenHeight = screenSize.height;
@@ -275,6 +299,9 @@ class _LoginPageState extends State<LoginPage> {
                     Config.connectionMode = config['connectionMode'];
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.setString('token', res.body);
+                    String currentTheme = Config.theme['color'] ?? 'light';
+                    await prefs.setString('theme_color', currentTheme);
+
                     setState(() {});
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text('欢迎回来！'),
@@ -335,6 +362,9 @@ class _LoginPageState extends State<LoginPage> {
                       Config.connectionMode = config['connectionMode'];
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.setString('token', res.body);
+                      String currentTheme = Config.theme['color'] ?? 'light';
+                      await prefs.setString('theme_color', currentTheme);
+
                       setState(() {});
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text('欢迎回来！'),
