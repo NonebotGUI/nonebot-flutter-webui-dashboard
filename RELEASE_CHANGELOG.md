@@ -1,4 +1,3 @@
-# 🌈 Changelog 2025.11.27 🌈
+# 🌈 Changelog 2026.02.21 🌈
 by @XTxiaoting14332
-新增自启动开关
-修复移动端界面颜色bug
+支持浏览器保存颜色主题 [#3](https://github.com/NonebotGUI/nonebot-flutter-webui-dashboard/issues/3)
