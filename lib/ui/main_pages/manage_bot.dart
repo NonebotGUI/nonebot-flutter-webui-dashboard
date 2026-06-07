@@ -17,6 +17,27 @@ class _HomeScreenState extends State<ManageBot> {
   Timer? _scrollTimer;
   Timer? _updateTimer;
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _inputController = TextEditingController();
+  final FocusNode _inputFocusNode = FocusNode();
+
+  void _sendTerminalInput() {
+    if (_inputController.text.isNotEmpty) {
+      if (Data.botInfo['isRunning'] == true) {
+        Map data = {
+          'id': Data.botInfo['id'],
+          'input': _inputController.text
+        };
+        String res = jsonEncode(data);
+        socket.send('bot/input?data=$res&token=${Config.token}');
+        _inputController.clear();
+        _inputFocusNode.requestFocus();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bot未运行，无法发送输入！')),
+        );
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -29,6 +50,8 @@ class _HomeScreenState extends State<ManageBot> {
   void dispose() {
     _scrollTimer?.cancel();
     _updateTimer?.cancel();
+    _inputController.dispose();
+    _inputFocusNode.dispose();
     super.dispose();
   }
 
@@ -348,6 +371,33 @@ class _HomeScreenState extends State<ManageBot> {
                                       ),
                                     ],
                                   )),
+                                  // 添加终端输入框
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 8),
+                                    height: 40,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextField(
+                                            controller: _inputController,
+                                            focusNode: _inputFocusNode,
+                                            decoration: const InputDecoration(
+                                              hintText: '向终端发送交互输入 (如 y)，按回车发送',
+                                              border: OutlineInputBorder(),
+                                              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                            ),
+                                            onSubmitted: (value) => _sendTerminalInput(),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        ElevatedButton.icon(
+                                          onPressed: _sendTerminalInput,
+                                          icon: const Icon(Icons.send_rounded, size: 18),
+                                          label: const Text('发送'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ))),
                     ),
@@ -470,7 +520,6 @@ class _HomeScreenState extends State<ManageBot> {
 }
 
 ///终端字体颜色
-//这一段AI写的我什么也不知道😭
 List<TextSpan> _logSpans(text) {
   RegExp regex = RegExp(
     r'(\[[A-Z]+\])|(nonebot \|)|(uvicorn \|)|(Env: dev)|(Env: prod)|(Config)|(nonebot_plugin_[\S]+)|("nonebot_plugin_[\S]+)|(使用 Python: [\S]+)|(Using python:[\S]+)|(Loaded adapters: [\S]+)|(\d{2}-\d{2} \d{2}:\d{2}:\d{2})|(Calling API [\S]+)',
