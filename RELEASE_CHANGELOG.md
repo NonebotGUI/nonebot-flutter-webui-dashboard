@@ -1,3 +1,3 @@
-# 🌈 Changelog 2026.02.21 🌈
+# 🌈 Changelog 2026.06.07 🔧
 by @XTxiaoting14332
-支持浏览器保存颜色主题 [#3](https://github.com/NonebotGUI/nonebot-flutter-webui-dashboard/issues/3)
+支持向进程内发送字符以进行交互
